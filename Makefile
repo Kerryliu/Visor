@@ -1,4 +1,4 @@
-NAME=potato
+NAME=visor
 GTKFLAGS=`pkg-config gtkmm-3.0 --cflags --libs`
 SRC=base.cpp
 CFLAGS=-g -Wall -o $(NAME)
