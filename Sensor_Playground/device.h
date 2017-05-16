@@ -2,17 +2,14 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#define TEMP 1
-#define FAN 0
 #include <string>
 #include <utility>
 #include <vector>
 
-class Device {
-  std::string set_name(std::string p);
-  int set_sensor_count(std::string p, bool type);
-  // std::vector<std::pair> sensor_readings;
+#define TEMP 1
+#define FAN 0
 
+class Device {
   public:
   const std::string file_path;
   const std::string name;
@@ -20,6 +17,15 @@ class Device {
   const int fan_sensor_count;
 
   Device(std::string p);
+
+  const std::vector<std::pair<std::string, int>> &get_sensor_readings(bool type) const;
+
+  private:
+  std::vector<std::pair<std::string, int>> temp_sensor_readings;
+  std::vector<std::pair<std::string, int>> fan_sensor_readings;
+
+  std::string set_name(std::string p);
+  int set_sensor_count(std::string p, bool type);
 };
 
 #endif

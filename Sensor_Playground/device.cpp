@@ -6,6 +6,10 @@ Device::Device(std::string p)
       temp_sensor_count(this->set_sensor_count(p, TEMP)),
       fan_sensor_count(this->set_sensor_count(p, FAN)) {}
 
+const std::vector<std::pair<std::string, int>> &Device::get_sensor_readings(bool type) const {
+  return type ? temp_sensor_readings : fan_sensor_readings;
+}
+
 std::string Device::set_name(std::string p) {
   std::ifstream file;
   std::string name;
@@ -28,4 +32,3 @@ int Device::set_sensor_count(std::string p, bool type) {
   }
   return 0;
 }
-
