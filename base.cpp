@@ -16,7 +16,7 @@ void on_button_clicked() {
     pWindow->hide(); //hide() will cause main::run() to end.
 }
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
   auto app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
 
   //Load the GtkBuilder file and instantiate its widgets:
@@ -49,9 +49,7 @@ int main (int argc, char **argv) {
     }
     refBuilder->get_widget("Graph", pDrawingArea);
     if(pDrawingArea) {
-      pDrawingArea
-        ->signal_draw()
-        .connect( sigc::ptr_fun(drawCallback));
+      pDrawingArea->signal_draw().connect(sigc::ptr_fun(drawCallback));
     }
 
     app->run(*pWindow);
