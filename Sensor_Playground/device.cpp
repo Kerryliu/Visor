@@ -29,10 +29,3 @@ int Device::set_sensor_count(std::string p, bool type) {
   return 0;
 }
 
-std::string Device::get_path() { return file_path; }
-
-std::string Device::get_name() { return name; }
-
-int Device::get_temp_sensor_count() { return temp_sensor_count; }
-
-int Device::get_fan_sensor_count() { return fan_sensor_count; }

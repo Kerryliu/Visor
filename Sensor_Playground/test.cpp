@@ -16,7 +16,7 @@ int main() {
 
   for (auto & d : devices) {
     std::cout << "Device Name: " << d.get_name() << std::endl;
-    std::cout << "  Temperature Sensor Count: " << d.get_temp_sensor_count() << std::endl;
-    std::cout << "  Fan Sensor Count: " << d.get_fan_sensor_count() << std::endl;
+    std::cout << "  Temperature Sensor Count: " << d.temp_sensor_count << std::endl;
+    std::cout << "  Fan Sensor Count: " << d.fan_sensor_count << std::endl;
   }
 }
