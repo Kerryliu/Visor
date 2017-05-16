@@ -1,7 +1,8 @@
 #include "device.h"
 
-Device::Device(std::string p)
-    : file_path(p), name(set_name(p)), sensor_type_counts(set_sensor_count(p)) {
+Device::Device(std::string file_path)
+    : file_path(file_path), name(set_name(file_path)),
+      sensor_type_counts(set_sensor_count(file_path)) {
   for (unsigned int type = 0; type < sensor_types.size(); type++) {
     sensor_readings[type].resize(sensor_type_counts[type]);
   }
@@ -13,22 +14,23 @@ Device::get_sensor_readings() {
   return sensor_readings;
 }
 
-std::string Device::set_name(std::string p) {
+std::string Device::set_name(std::string file_path) {
   std::ifstream file;
-  std::string name;
-  file.open(p + '/' + "name");
-  getline(file, name);
+  std::string file_name;
+  file.open(file_path + '/' + "name");
+  getline(file, file_name);
   file.close();
-  return name;
+  return file_name;
 }
 
-const std::vector<unsigned int> Device::set_sensor_count(std::string p) {
+const std::vector<unsigned int>
+Device::set_sensor_count(std::string file_path) {
   std::vector<unsigned int> sensor_type_counts(sensor_types.size());
   for (unsigned int type = 0; type < sensor_types.size(); type++) {
     std::ifstream file;
     for (unsigned int sensor_count = 0; sensor_count < 100; sensor_count++) {
-      file.open(p + sensor_types[type] + std::to_string(sensor_count + 1) +
-                "_input");
+      file.open(file_path + sensor_types[type] +
+                std::to_string(sensor_count + 1) + "_input");
       if (file) {
         file.close();
       } else {

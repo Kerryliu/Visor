@@ -23,7 +23,7 @@ public:
   const std::vector<unsigned int> sensor_type_counts =
       std::vector<unsigned int>(sensor_types.size());
 
-  Device(std::string p);
+  Device(std::string file_path);
 
   const std::vector<std::vector<std::pair<std::string, int>>> &
   get_sensor_readings();
@@ -33,8 +33,8 @@ private:
       std::vector<std::vector<std::pair<std::string, int>>>(
           sensor_types.size());
 
-  std::string set_name(std::string p);
-  const std::vector<unsigned int> set_sensor_count(std::string p);
+  std::string set_name(std::string file_path);
+  const std::vector<unsigned int> set_sensor_count(std::string file_path);
   void refresh_sensors();
 };
 

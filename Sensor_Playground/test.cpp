@@ -1,4 +1,3 @@
-#include ing >
 #include "device.h"
 #include <experimental/filesystem>
 #include <iostream>
