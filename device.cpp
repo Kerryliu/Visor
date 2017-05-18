@@ -10,7 +10,6 @@ Device::Device(std::string file_path)
 
 const std::vector<std::vector<std::pair<std::string, int>>> &
 Device::get_sensor_readings() {
-  refresh_sensors();
   return sensor_readings;
 }
 

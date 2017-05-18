@@ -25,6 +25,7 @@ public:
 
   Device(std::string file_path);
 
+  void refresh_sensors();
   const std::vector<std::vector<std::pair<std::string, int>>> &
   get_sensor_readings();
 
@@ -35,7 +36,6 @@ private:
 
   std::string set_name(std::string file_path);
   const std::vector<unsigned int> set_sensor_count(std::string file_path);
-  void refresh_sensors();
 };
 
 #endif

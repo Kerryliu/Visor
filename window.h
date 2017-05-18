@@ -3,9 +3,14 @@
 
 #include <gtkmm.h>
 #include "device.h"
+#include <thread>
 #include <experimental/filesystem>
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <thread>
+
+using std::vector;
 
 class Window : public Gtk::Window {
 public:
@@ -13,11 +18,14 @@ public:
   virtual ~Window();
 
 protected:
-  int test = 0;
-  std::vector<Device> devices;
-  std::string path = "/sys/class/hwmon/";
-  bool update_tree_view(int x);
+  bool stop_work = false;
+  vector<Device> devices;
+  std::string file_path = "/sys/class/hwmon/";
   void make_tree_view();
+  void update_values();
+  void update_tree_view();
+  Glib::Dispatcher m_Dispatcher;
+  std::thread* m_WorkerThread;
   // Signal handlers:
   void on_button_quit();
   void on_treeview_row_activated(const Gtk::TreeModel::Path &path,
