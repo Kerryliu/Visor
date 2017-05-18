@@ -43,8 +43,6 @@ Window::Window()
 Window::~Window() {}
 
 void Window::make_tree_view() {
-  // Create the Tree model:
-  // m_refTreeModel.clear();
   m_refTreeModel = Gtk::TreeStore::create(m_Columns);
   m_TreeView.set_model(m_refTreeModel);
 
@@ -103,9 +101,6 @@ void Window::make_tree_view() {
   // Start a new worker thread.
   m_Dispatcher.connect(sigc::mem_fun(*this, &Window::update_tree_view));
   m_WorkerThread = new std::thread([this] { update_values(); });
-  // sigc::slot<bool> my_slot =
-  //     sigc::bind(sigc::mem_fun(*this, &Window::update_tree_view), test);
-  // sigc::connection conn = Glib::signal_timeout().connect(my_slot, 500);
 }
 
 void Window::update_values() {
@@ -173,9 +168,9 @@ void Window::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
                                        Gtk::TreeViewColumn * /* column */) {
   Gtk::TreeModel::iterator iter = m_refTreeModel->get_iter(path);
   if (iter) {
-    // Gtk::TreeModel::Row row = *iter;
+    Gtk::TreeModel::Row row = *iter;
     // row[m_Columns.m_col_name] = "poop";
-    // std::cout << "Row activated: ID=" << row[m_Columns.m_col_name]
-    //<< ", Name=" << row[m_Columns.m_col_value] << std::endl;
+    std::cout << "Row activated: ID=" << row[m_Columns.m_col_name]
+      << ", Name=" << row[m_Columns.m_col_value] << std::endl;
   }
 }
