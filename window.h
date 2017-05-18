@@ -38,11 +38,16 @@ protected:
   public:
     ModelColumns() {
       add(m_col_name);
-      add(m_col_value);
+      add(m_col_current_value);
+      add(m_col_min_value);
+      add(m_col_max_value);
+      add(m_col_average_value);
     }
-
     Gtk::TreeModelColumn<Glib::ustring> m_col_name;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_value;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_current_value;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_min_value;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_max_value;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_average_value;
   };
 
   ModelColumns m_Columns;

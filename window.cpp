@@ -38,19 +38,17 @@ Window::~Window() {}
 void Window::make_tree_view() {
   m_refTreeModel = Gtk::TreeStore::create(m_Columns);
   m_TreeView.set_model(m_refTreeModel);
-
   Gtk::TreeModel::Row row;
   Gtk::TreeModel::Row child_row;
   Gtk::TreeModel::Row baby_child_row;
 
   for (unsigned int i = 0; i < devices.size(); i++) {
     // Get Readings
-    vector<vector<std::pair<string, int>>> readings =
+    vector<vector<Device::sensor_reading>> readings =
         devices[i].get_sensor_readings();
 
     row = *(m_refTreeModel->append());
     row[m_Columns.m_col_name] = devices[i].name;
-    row[m_Columns.m_col_value] = "";
 
     for (unsigned int sensor_type = 0; sensor_type < readings.size();
          sensor_type++) {
@@ -59,17 +57,22 @@ void Window::make_tree_view() {
         child_row = *(m_refTreeModel->append(row.children()));
         child_row[m_Columns.m_col_name] =
             devices[i].sensor_types[sensor_type] + ": ";
-        child_row[m_Columns.m_col_value] = "";
 
         for (unsigned int j = 0; j < readings[sensor_type].size(); j++) {
           baby_child_row = *(m_refTreeModel->append(child_row.children()));
           baby_child_row[m_Columns.m_col_name] =
-              readings[sensor_type][j].first + ": ";
+              readings[sensor_type][j].name + ": ";
           // std::ostringstream temp;
           // temp << std::setprecision(1) << std::fixed
           //      << ((double)readings[sensor_type][j].second / 1000);
-          baby_child_row[m_Columns.m_col_value] =
-              Device::formatValue(readings[sensor_type][j].second, sensor_type);
+          baby_child_row[m_Columns.m_col_current_value] = Device::formatValue(
+              readings[sensor_type][j].current_value, sensor_type);
+          baby_child_row[m_Columns.m_col_min_value] = Device::formatValue(
+              readings[sensor_type][j].min_value, sensor_type);
+          baby_child_row[m_Columns.m_col_max_value] = Device::formatValue(
+              readings[sensor_type][j].max_value, sensor_type);
+          baby_child_row[m_Columns.m_col_average_value] = Device::formatValue(
+              readings[sensor_type][j].average_value, sensor_type);
         }
       }
     }
@@ -77,7 +80,10 @@ void Window::make_tree_view() {
 
   // Add the TreeView's view columns:
   m_TreeView.append_column("Name", m_Columns.m_col_name);
-  m_TreeView.append_column("Value", m_Columns.m_col_value);
+  m_TreeView.append_column("Current", m_Columns.m_col_current_value);
+  m_TreeView.append_column("Min", m_Columns.m_col_min_value);
+  m_TreeView.append_column("Max", m_Columns.m_col_max_value);
+  m_TreeView.append_column("Average", m_Columns.m_col_average_value);
 
   // Connect signal:
   m_TreeView.signal_row_activated().connect(
@@ -109,7 +115,7 @@ void Window::update_tree_view() {
   unsigned int device_index = 0;
   for (auto &device_row : rows) {
     // Get Readings
-    vector<vector<std::pair<string, int>>> readings =
+    vector<vector<Device::sensor_reading>> readings =
         this->devices[device_index].get_sensor_readings();
 
     // Get Fan & Temp children of device
@@ -124,8 +130,14 @@ void Window::update_tree_view() {
         for (unsigned int j = 0; j < readings[sensor_type].size();
              j++, iter_sensors++) {
           Gtk::TreeModel::Row values = *iter_sensors;
-          values[m_Columns.m_col_value] =
-              Device::formatValue(readings[sensor_type][j].second, sensor_type);
+          values[m_Columns.m_col_current_value] = Device::formatValue(
+              readings[sensor_type][j].current_value, sensor_type);
+          values[m_Columns.m_col_min_value] = Device::formatValue(
+              readings[sensor_type][j].min_value, sensor_type);
+          values[m_Columns.m_col_max_value] = Device::formatValue(
+              readings[sensor_type][j].max_value, sensor_type);
+          values[m_Columns.m_col_average_value] = Device::formatValue(
+              readings[sensor_type][j].average_value, sensor_type);
         }
         iter_sensor_types++;
       }
@@ -151,6 +163,6 @@ void Window::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
     Gtk::TreeModel::Row row = *iter;
     // row[m_Columns.m_col_name] = "poop";
     std::cout << "Row activated: ID=" << row[m_Columns.m_col_name]
-              << ", Name=" << row[m_Columns.m_col_value] << std::endl;
+              << ", Name=" << row[m_Columns.m_col_current_value] << std::endl;
   }
 }

@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <climits>
 
 // Only doing 4 for now, for simplicity
 // https://www.kernel.org/doc/Documentation/hwmon/sysfs-interface
@@ -21,6 +22,15 @@ using std::string;
 
 class Device {
 public:
+  struct sensor_reading {
+    string name;
+    int current_value = 0;
+    int min_value = INT_MAX;
+    int max_value = INT_MIN;
+    int refresh_count = 0;
+    int average_value = 0;
+  };
+
   const string file_path;
   const string name;
   // Make sure follow two vectors have same size or shit will hit the fan
@@ -34,11 +44,11 @@ public:
 
   void refresh_sensors();
   static string formatValue(int value, int sensor_type);
-  const vector<vector<std::pair<string, int>>> &get_sensor_readings();
+  const vector<vector<sensor_reading>> &get_sensor_readings();
 
 private:
-  vector<vector<std::pair<string, int>>> sensor_readings =
-      vector<vector<std::pair<string, int>>>(sensor_types.size());
+  vector<vector<sensor_reading>> sensor_readings =
+      vector<vector<sensor_reading>>(sensor_types.size());
 
   std::string set_name(std::string file_path);
   const vector<unsigned int> set_sensor_count(std::string file_path);
