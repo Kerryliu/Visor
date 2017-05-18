@@ -3,6 +3,7 @@
 Device::Device(string file_path)
     : file_path(file_path), name(set_name(file_path)),
       sensor_type_counts(set_sensor_count(file_path)) {
+  // Resize vector that stores all the stuffs for the detected sensor count~
   for (unsigned int type = 0; type < sensor_types.size(); type++) {
     sensor_readings[type].resize(sensor_type_counts[type]);
   }
@@ -25,6 +26,7 @@ void Device::refresh_sensors() {
          sensor_number < sensor_type_counts[type]; sensor_number++) {
       string current_sensor_name;
 
+      // Previous values to compare against:
       sensor_reading previous_sensor_type_reading =
           previous_sensor_type_readings[sensor_number];
       // int previous_current_value =
@@ -35,7 +37,7 @@ void Device::refresh_sensors() {
           previous_sensor_type_reading.average_value;
       int previous_refresh_count = previous_sensor_type_reading.refresh_count;
 
-      // New values to be
+      // New values to be:
       int current_current_value;
       int current_min_value;
       int current_max_value;
@@ -75,6 +77,7 @@ void Device::refresh_sensors() {
         current_sensor_name = "Sensor #" + std::to_string(sensor_number + 1);
       }
 
+      // Create new sensor_reading struct for current values
       sensor_reading current_sensor_reading;
       current_sensor_reading.name = current_sensor_name;
       current_sensor_reading.current_value = current_current_value;
@@ -120,6 +123,7 @@ string Device::set_name(string file_path) {
 
 const vector<unsigned int> Device::set_sensor_count(string file_path) {
   vector<unsigned int> sensor_type_counts(sensor_types.size());
+  // Try opening sensor file; if it succeeds, the sensor exists
   for (unsigned int type = 0; type < sensor_types.size(); type++) {
     std::ifstream file;
     for (unsigned int sensor_count = 0; sensor_count < 100; sensor_count++) {
