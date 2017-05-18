@@ -48,7 +48,7 @@ void Window::make_tree_view() {
         devices[i].get_sensor_readings();
 
     row = *(m_refTreeModel->append());
-    row[m_Columns.m_col_name] = devices[i].name;
+    row[m_Columns.m_col_name] = devices[i].name + ": ";
 
     for (unsigned int sensor_type = 0; sensor_type < readings.size();
          sensor_type++) {
@@ -62,9 +62,6 @@ void Window::make_tree_view() {
           baby_child_row = *(m_refTreeModel->append(child_row.children()));
           baby_child_row[m_Columns.m_col_name] =
               readings[sensor_type][j].name + ": ";
-          // std::ostringstream temp;
-          // temp << std::setprecision(1) << std::fixed
-          //      << ((double)readings[sensor_type][j].second / 1000);
           baby_child_row[m_Columns.m_col_current_value] = Device::formatValue(
               readings[sensor_type][j].current_value, sensor_type);
           baby_child_row[m_Columns.m_col_min_value] = Device::formatValue(
@@ -124,13 +121,13 @@ void Window::update_tree_view() {
         this->devices[device_index].get_sensor_readings();
 
     // Get Fan & Temp children of device
-    Gtk::TreeModel::Children sensor_types = device_row->children();
-    Gtk::TreeModel::Children::iterator iter_sensor_types = sensor_types.begin();
+    Gtk::TreeModel::Children sensor_types_row = device_row->children();
+    Gtk::TreeModel::Children::iterator iter_sensor_type = sensor_types_row.begin();
 
     for (unsigned int sensor_type = 0; sensor_type < readings.size();
          sensor_type++) {
       if (!readings[sensor_type].empty()) {
-        Gtk::TreeModel::Children sensors = iter_sensor_types->children();
+        Gtk::TreeModel::Children sensors = iter_sensor_type->children();
         Gtk::TreeModel::Children::iterator iter_sensors = sensors.begin();
         for (unsigned int j = 0; j < readings[sensor_type].size();
              j++, iter_sensors++) {
@@ -144,7 +141,7 @@ void Window::update_tree_view() {
           values[m_Columns.m_col_average_value] = Device::formatValue(
               readings[sensor_type][j].average_value, sensor_type);
         }
-        iter_sensor_types++;
+        iter_sensor_type++;
       }
     }
     device_index++;
