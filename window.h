@@ -1,14 +1,13 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <gtkmm.h>
 #include "device.h"
-#include <thread>
-#include <experimental/filesystem>
-#include <iostream>
-#include <vector>
 #include <chrono>
+#include <experimental/filesystem>
+#include <gtkmm.h>
+#include <iostream>
 #include <thread>
+#include <vector>
 
 using std::vector;
 using std::string;
@@ -21,12 +20,12 @@ public:
 protected:
   bool stop_work = false;
   vector<Device> devices;
-  std::string file_path = "/sys/class/hwmon/";
+  const std::string file_path = "/sys/class/hwmon/";
   void make_tree_view();
   void update_values();
   void update_tree_view();
   Glib::Dispatcher m_Dispatcher;
-  std::thread* m_WorkerThread;
+  std::thread *m_WorkerThread;
   // Signal handlers:
   void on_button_quit();
   void on_treeview_row_activated(const Gtk::TreeModel::Path &path,
