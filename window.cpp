@@ -18,13 +18,6 @@ Window::Window()
   m_ScrolledWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
   m_VBox.pack_start(m_ScrolledWindow);
-  // m_VBox.pack_start(m_ButtonBox, Gtk::PACK_SHRINK);
-  //
-  // m_ButtonBox.pack_start(m_Button_Quit, Gtk::PACK_SHRINK);
-  // m_ButtonBox.set_border_width(5);
-  // m_ButtonBox.set_layout(Gtk::BUTTONBOX_END);
-  // m_Button_Quit.signal_clicked().connect(
-  //     sigc::mem_fun(*this, &Window::on_button_quit));
 
   // Find all devices
   for (auto &p : fs::directory_iterator(file_path)) {
@@ -59,30 +52,25 @@ void Window::make_tree_view() {
     row[m_Columns.m_col_name] = devices[i].name;
     row[m_Columns.m_col_value] = "";
 
-    // Temperature
-    if (!readings[TEMPERATURE].empty()) {
-      child_row = *(m_refTreeModel->append(row.children()));
-      child_row[m_Columns.m_col_name] = "Temperature: ";
-      child_row[m_Columns.m_col_value] = "";
-      for (unsigned int j = 0; j < readings[TEMPERATURE].size(); j++) {
-        baby_child_row = *(m_refTreeModel->append(child_row.children()));
-        baby_child_row[m_Columns.m_col_name] =
-            readings[TEMPERATURE][j].first + ": ";
-        baby_child_row[m_Columns.m_col_value] =
-            std::to_string(readings[TEMPERATURE][j].second / 1000);
-      }
-    }
+    for (unsigned int sensor_type = 0; sensor_type < readings.size();
+         sensor_type++) {
+      // Temperature
+      if (!readings[sensor_type].empty()) {
+        child_row = *(m_refTreeModel->append(row.children()));
+        child_row[m_Columns.m_col_name] =
+            devices[i].sensor_types[sensor_type] + ": ";
+        child_row[m_Columns.m_col_value] = "";
 
-    // Fan
-    if (!readings[FAN].empty()) {
-      child_row = *(m_refTreeModel->append(row.children()));
-      child_row[m_Columns.m_col_name] = "Fan: ";
-      child_row[m_Columns.m_col_value] = "";
-      for (unsigned int j = 0; j < readings[FAN].size(); j++) {
-        baby_child_row = *(m_refTreeModel->append(child_row.children()));
-        baby_child_row[m_Columns.m_col_name] = readings[FAN][j].first + ": ";
-        baby_child_row[m_Columns.m_col_value] =
-            std::to_string(readings[FAN][j].second);
+        for (unsigned int j = 0; j < readings[sensor_type].size(); j++) {
+          baby_child_row = *(m_refTreeModel->append(child_row.children()));
+          baby_child_row[m_Columns.m_col_name] =
+              readings[sensor_type][j].first + ": ";
+          // std::ostringstream temp;
+          // temp << std::setprecision(1) << std::fixed
+          //      << ((double)readings[sensor_type][j].second / 1000);
+          baby_child_row[m_Columns.m_col_value] =
+              Device::formatValue(readings[sensor_type][j].second, sensor_type);
+        }
       }
     }
   }
@@ -104,8 +92,8 @@ void Window::make_tree_view() {
 }
 
 void Window::update_values() {
-  while(1) {
-    if(stop_work) {
+  while (1) {
+    if (stop_work) {
       break;
     }
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -128,26 +116,18 @@ void Window::update_tree_view() {
     Gtk::TreeModel::Children sensor_types = device_row->children();
     Gtk::TreeModel::Children::iterator iter_sensor_types = sensor_types.begin();
 
-    // Update temp readings
-    if (!readings[TEMPERATURE].empty()) {
-      Gtk::TreeModel::Children sensors = iter_sensor_types->children();
-      Gtk::TreeModel::Children::iterator iter_sensors = sensors.begin();
-      for (unsigned int j = 0; j < readings[TEMPERATURE].size();
-           j++, iter_sensors++) {
-        Gtk::TreeModel::Row values = *iter_sensors;
-        values[m_Columns.m_col_value] =
-            std::to_string(readings[TEMPERATURE][j].second / 1000);
-      }
-      iter_sensor_types++;
-    }
-
-    // Update fan readings
-    if (!readings[FAN].empty()) {
-      Gtk::TreeModel::Children sensors = iter_sensor_types->children();
-      Gtk::TreeModel::Children::iterator iter_sensors = sensors.begin();
-      for (unsigned int j = 0; j < readings[FAN].size(); j++, iter_sensors++) {
-        Gtk::TreeModel::Row values = *iter_sensors;
-        values[m_Columns.m_col_value] = std::to_string(readings[FAN][j].second);
+    for (unsigned int sensor_type = 0; sensor_type < readings.size();
+         sensor_type++) {
+      if (!readings[sensor_type].empty()) {
+        Gtk::TreeModel::Children sensors = iter_sensor_types->children();
+        Gtk::TreeModel::Children::iterator iter_sensors = sensors.begin();
+        for (unsigned int j = 0; j < readings[sensor_type].size();
+             j++, iter_sensors++) {
+          Gtk::TreeModel::Row values = *iter_sensors;
+          values[m_Columns.m_col_value] =
+              Device::formatValue(readings[sensor_type][j].second, sensor_type);
+        }
+        iter_sensor_types++;
       }
     }
     device_index++;
@@ -171,6 +151,6 @@ void Window::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
     Gtk::TreeModel::Row row = *iter;
     // row[m_Columns.m_col_name] = "poop";
     std::cout << "Row activated: ID=" << row[m_Columns.m_col_name]
-      << ", Name=" << row[m_Columns.m_col_value] << std::endl;
+              << ", Name=" << row[m_Columns.m_col_value] << std::endl;
   }
 }

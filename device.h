@@ -6,6 +6,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 // Only doing 4 for now, for simplicity
 // https://www.kernel.org/doc/Documentation/hwmon/sysfs-interface
@@ -21,21 +23,22 @@ class Device {
 public:
   const string file_path;
   const string name;
-  const vector<string> sensor_types = {"/in", "/fan", "/pwm",
-                                                 "/temp"};
+  // Make sure follow two vectors have same size or shit will hit the fan
+  const vector<string> sensor_types = {"Voltage", "Fan", "PWM", "Temperature"};
+  const vector<string> sensor_types_paths = {"/in", "/fan", "/pwm", "/temp"};
+
   const vector<unsigned int> sensor_type_counts =
       vector<unsigned int>(sensor_types.size());
 
   Device(string file_path);
 
   void refresh_sensors();
-  const vector<vector<std::pair<string, int>>> &
-  get_sensor_readings();
+  static string formatValue(int value, int sensor_type);
+  const vector<vector<std::pair<string, int>>> &get_sensor_readings();
 
 private:
   vector<vector<std::pair<string, int>>> sensor_readings =
-      vector<vector<std::pair<string, int>>>(
-          sensor_types.size());
+      vector<vector<std::pair<string, int>>>(sensor_types.size());
 
   std::string set_name(std::string file_path);
   const vector<unsigned int> set_sensor_count(std::string file_path);

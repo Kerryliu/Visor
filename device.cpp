@@ -8,37 +8,8 @@ Device::Device(string file_path)
   }
 }
 
-const vector<vector<std::pair<string, int>>> &
-Device::get_sensor_readings() {
+const vector<vector<std::pair<string, int>>> &Device::get_sensor_readings() {
   return sensor_readings;
-}
-
-string Device::set_name(string file_path) {
-  std::ifstream file;
-  string file_name;
-  file.open(file_path + '/' + "name");
-  getline(file, file_name);
-  file.close();
-  return file_name;
-}
-
-const vector<unsigned int>
-Device::set_sensor_count(string file_path) {
-  vector<unsigned int> sensor_type_counts(sensor_types.size());
-  for (unsigned int type = 0; type < sensor_types.size(); type++) {
-    std::ifstream file;
-    for (unsigned int sensor_count = 0; sensor_count < 100; sensor_count++) {
-      file.open(file_path + sensor_types[type] +
-                std::to_string(sensor_count + 1) + "_input");
-      if (file) {
-        file.close();
-      } else {
-        sensor_type_counts[type] = sensor_count;
-        break;
-      }
-    }
-  }
-  return sensor_type_counts;
 }
 
 void Device::refresh_sensors() {
@@ -53,7 +24,7 @@ void Device::refresh_sensors() {
     for (unsigned int sensor_number = 0;
          sensor_number < sensor_type_counts[type]; sensor_number++) {
       // Get sensor value:
-      file.open(file_path + sensor_types[type] +
+      file.open(file_path + sensor_types_paths[type] +
                 std::to_string(sensor_number + 1) + "_input");
       string temp_string;
       getline(file, temp_string);
@@ -61,20 +32,65 @@ void Device::refresh_sensors() {
       file.close();
 
       // see if sensor value has name:
-      file.open(file_path + sensor_types[type] +
+      file.open(file_path + sensor_types_paths[type] +
                 std::to_string(sensor_number + 1) + "_label");
       if (file) {
         getline(file, sensor_name);
         file.close();
       } else {
-        string temp_string = sensor_types[type].substr(1);
-        temp_string[0] = toupper(temp_string[0]);
-        sensor_name =
-            temp_string + " sensor #" + std::to_string(sensor_number + 1);
+        sensor_name = "Sensor #" + std::to_string(sensor_number + 1);
       }
       std::pair<string, int> sensor_reading(sensor_name, sensor_value);
       sensor_type_readings[sensor_number] = sensor_reading;
     }
     sensor_readings[type] = sensor_type_readings;
   }
+}
+
+string Device::formatValue(int value, int sensor_type) {
+  std::ostringstream temp;
+  string value_string;
+  switch (sensor_type) {
+  case VOLTAGE:
+    temp << std::setprecision(1) << std::fixed << ((double)value / 1000);
+    value_string= temp.str();
+    value_string += " V";
+    return value_string;
+  case TEMPERATURE:
+    temp << std::setprecision(1) << std::fixed << ((double)value / 1000);
+    value_string = temp.str();
+    value_string += " \u2103";
+    return value_string;
+  default:
+    value_string = std::to_string(value);
+    value_string += " RPM";
+    return value_string;
+  }
+}
+
+string Device::set_name(string file_path) {
+  std::ifstream file;
+  string file_name;
+  file.open(file_path + '/' + "name");
+  getline(file, file_name);
+  file.close();
+  return file_name;
+}
+
+const vector<unsigned int> Device::set_sensor_count(string file_path) {
+  vector<unsigned int> sensor_type_counts(sensor_types.size());
+  for (unsigned int type = 0; type < sensor_types.size(); type++) {
+    std::ifstream file;
+    for (unsigned int sensor_count = 0; sensor_count < 100; sensor_count++) {
+      file.open(file_path + sensor_types_paths[type] +
+                std::to_string(sensor_count + 1) + "_input");
+      if (file) {
+        file.close();
+      } else {
+        sensor_type_counts[type] = sensor_count;
+        break;
+      }
+    }
+  }
+  return sensor_type_counts;
 }
