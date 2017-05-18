@@ -94,12 +94,15 @@ void Window::make_tree_view() {
       sigc::mem_fun(*this, &Window::on_treeview_row_activated));
 
   m_TreeView.expand_all();
+  m_TreeView.set_fixed_height_mode(true);
+  m_TreeView.set_enable_tree_lines(true);
 
   sigc::slot<bool> my_slot = sigc::bind(sigc::mem_fun(*this, &Window::update_tree_view), test);
-  sigc::connection conn = Glib::signal_timeout().connect(my_slot, 500);
+  sigc::connection conn = Glib::signal_timeout().connect(my_slot, 1000);
 }
 
 bool Window::update_tree_view(int x) {
+  m_TreeView.freeze_notify();
   Gtk::TreeModel::Children devices = m_refTreeModel->children();
   unsigned int device_index = 0;
   for(auto device : devices) {
@@ -120,7 +123,6 @@ bool Window::update_tree_view(int x) {
       Gtk::TreeModel::Children::iterator iter_sensors = sensors.begin();
       for (unsigned int j = 0; j < temp_readings.size(); j++, iter_sensors++) {
         Gtk::TreeModel::Row values = *iter_sensors;
-        values[m_Columns.m_col_name] = temp_readings[j].first + ": ";
         values[m_Columns.m_col_value] =
             std::to_string(temp_readings[j].second / 1000);
       }
@@ -131,7 +133,6 @@ bool Window::update_tree_view(int x) {
       Gtk::TreeModel::Children::iterator iter_sensors = sensors.begin();
       for (unsigned int j = 0; j < fan_readings.size(); j++, iter_sensors++) {
         Gtk::TreeModel::Row values = *iter_sensors;
-        values[m_Columns.m_col_name] = fan_readings[j].first + ": ";
         values[m_Columns.m_col_value] =
             std::to_string(fan_readings[j].second);
       }
@@ -139,6 +140,7 @@ bool Window::update_tree_view(int x) {
     device_index++;
   }
   std::cout << test++ << std::endl;
+  m_TreeView.thaw_notify();
   return true;
 }
 
