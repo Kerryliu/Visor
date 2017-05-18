@@ -1,6 +1,6 @@
 NAME=visor
 GTKFLAGS=`pkg-config gtkmm-3.0 cairo --cflags --libs`
-SRC=base.cpp
+SRC=base.cpp window.cpp
 CFLAGS=-std=c++1z -g -Wall -o $(NAME)
 CC=g++
 
