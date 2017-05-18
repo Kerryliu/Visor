@@ -7,7 +7,7 @@ Window::Window()
       m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
   set_title("Visor");
   set_border_width(1);
-  set_default_size(800, 600);
+  set_default_size(500, 600);
 
   add(m_VBox);
 
@@ -79,7 +79,7 @@ void Window::make_tree_view() {
   }
 
   // Add the TreeView's view columns:
-  m_TreeView.append_column("Name", m_Columns.m_col_name);
+  m_TreeView.append_column("Sensor", m_Columns.m_col_name);
   m_TreeView.append_column("Current", m_Columns.m_col_current_value);
   m_TreeView.append_column("Min", m_Columns.m_col_min_value);
   m_TreeView.append_column("Max", m_Columns.m_col_max_value);
