@@ -2,13 +2,13 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#include <climits>
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
-#include <sstream>
-#include <iomanip>
-#include <climits>
 
 // Only doing 4 for now, for simplicity
 // https://www.kernel.org/doc/Documentation/hwmon/sysfs-interface

@@ -5,11 +5,11 @@
 #include <chrono>
 #include <experimental/filesystem>
 #include <gtkmm.h>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <thread>
 #include <vector>
-#include <sstream>
-#include <iomanip>
 
 using std::vector;
 using std::string;

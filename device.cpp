@@ -27,7 +27,8 @@ void Device::refresh_sensors() {
 
       sensor_reading previous_sensor_type_reading =
           previous_sensor_type_readings[sensor_number];
-      // int previous_current_value = previous_sensor_type_reading.current_value;
+      // int previous_current_value =
+      // previous_sensor_type_reading.current_value;
       int previous_min_value = previous_sensor_type_reading.min_value;
       int previous_max_value = previous_sensor_type_reading.max_value;
       int previous_average_sensor_value =
