@@ -18,12 +18,12 @@ protected:
   class ModelColumns : public Gtk::TreeModel::ColumnRecord {
   public:
     ModelColumns() {
-      add(m_col_id);
       add(m_col_name);
+      add(m_col_value);
     }
 
-    Gtk::TreeModelColumn<int> m_col_id;
     Gtk::TreeModelColumn<Glib::ustring> m_col_name;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_value;
   };
 
   ModelColumns m_Columns;

@@ -1,9 +1,14 @@
 #include "window.h"
+#include "device.h"
+#include <experimental/filesystem>
 #include <iostream>
+#include <vector>
+
+namespace fs = std::experimental::filesystem;
 
 Window::Window()
     : m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
-  set_title("Gtk::TreeView (TreeStore) example");
+  set_title("Wow");
   set_border_width(5);
   set_default_size(800, 600);
 
@@ -30,35 +35,57 @@ Window::Window()
 
   // All the items to be reordered with drag-and-drop:
   //m_TreeView.set_reorderable();
+  //
+  std::vector<Device> devices;
+  std::string path = "/sys/class/hwmon/";
 
-  // Fill the TreeView's model
-  Gtk::TreeModel::Row row = *(m_refTreeModel->append());
-  row[m_Columns.m_col_id] = 1;
-  row[m_Columns.m_col_name] = "Billy Bob";
+  for (auto &p : fs::directory_iterator(path)) {
+    devices.push_back(Device(p.path().string()));
+  }
+  
+  Gtk::TreeModel::Row row;
+  Gtk::TreeModel::Row child_row;
+  Gtk::TreeModel::Row baby_child_row;
+  for (unsigned int i = 0; i < devices.size(); i++) {
+    // Get Readings
+    std::vector<std::vector<std::pair<std::string, int>>> readings =
+        devices[i].get_sensor_readings();
+    std::vector<std::pair<std::string, int>> temp_readings =
+        readings[TEMPERATURE];
+    std::vector<std::pair<std::string, int>> fan_readings = readings[FAN];
 
-  Gtk::TreeModel::Row childrow = *(m_refTreeModel->append(row.children()));
-  childrow[m_Columns.m_col_id] = 11;
-  childrow[m_Columns.m_col_name] = "Billy Bob Junior";
+    row = *(m_refTreeModel->append());
+    row[m_Columns.m_col_name] = devices[i].name;
+    row[m_Columns.m_col_value]= "";
+    
+    // Temperature
+    if(!temp_readings.empty()) {
+      child_row = *(m_refTreeModel->append(row.children()));
+      child_row[m_Columns.m_col_name] = "Temperature: ";
+      child_row[m_Columns.m_col_value] = "";
+      for (unsigned int j = 0; j < temp_readings.size(); j++) {
+        baby_child_row = *(m_refTreeModel->append(child_row.children()));
+        baby_child_row[m_Columns.m_col_name] = temp_readings[j].first + ": ";
+        baby_child_row[m_Columns.m_col_value] = std::to_string(temp_readings[j].second/1000);
+      }
+    }
 
-  childrow = *(m_refTreeModel->append(row.children()));
-  childrow[m_Columns.m_col_id] = 12;
-  childrow[m_Columns.m_col_name] = "Sue Bob";
-
-  row = *(m_refTreeModel->append());
-  row[m_Columns.m_col_id] = 2;
-  row[m_Columns.m_col_name] = "Joey Jojo";
-
-  row = *(m_refTreeModel->append());
-  row[m_Columns.m_col_id] = 3;
-  row[m_Columns.m_col_name] = "Rob McRoberts";
-
-  childrow = *(m_refTreeModel->append(row.children()));
-  childrow[m_Columns.m_col_id] = 31;
-  childrow[m_Columns.m_col_name] = "Xavier McRoberts";
+    // Fan
+    if(!fan_readings.empty()) {
+      child_row = *(m_refTreeModel->append(row.children()));
+      child_row[m_Columns.m_col_name] = "Fan: ";
+      child_row[m_Columns.m_col_value] = "";
+      for (unsigned int j = 0; j < fan_readings.size(); j++) {
+        baby_child_row = *(m_refTreeModel->append(child_row.children()));
+        baby_child_row[m_Columns.m_col_name] = fan_readings[j].first + ": ";
+        baby_child_row[m_Columns.m_col_value] = std::to_string(fan_readings[j].second);
+      }
+    }
+  }
 
   // Add the TreeView's view columns:
-  m_TreeView.append_column("ID", m_Columns.m_col_id);
   m_TreeView.append_column("Name", m_Columns.m_col_name);
+  m_TreeView.append_column("Value", m_Columns.m_col_value);
 
   // Connect signal:
   m_TreeView.signal_row_activated().connect(
@@ -76,7 +103,7 @@ void Window::on_treeview_row_activated(
   Gtk::TreeModel::iterator iter = m_refTreeModel->get_iter(path);
   if (iter) {
     Gtk::TreeModel::Row row = *iter;
-    std::cout << "Row activated: ID=" << row[m_Columns.m_col_id]
-              << ", Name=" << row[m_Columns.m_col_name] << std::endl;
+    std::cout << "Row activated: ID=" << row[m_Columns.m_col_name]
+              << ", Name=" << row[m_Columns.m_col_value] << std::endl;
   }
 }
