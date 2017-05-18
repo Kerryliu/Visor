@@ -1,8 +1,4 @@
 #include "window.h"
-#include "device.h"
-#include <experimental/filesystem>
-#include <iostream>
-#include <vector>
 
 namespace fs = std::experimental::filesystem;
 
@@ -28,23 +24,28 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
   m_Button_Quit.signal_clicked().connect(
       sigc::mem_fun(*this, &Window::on_button_quit));
 
-  // Create the Tree model:
-  m_refTreeModel = Gtk::TreeStore::create(m_Columns);
-  m_TreeView.set_model(m_refTreeModel);
-
-  // All the items to be reordered with drag-and-drop:
-  // m_TreeView.set_reorderable();
-  //
-  std::vector<Device> devices;
-  std::string path = "/sys/class/hwmon/";
-
   for (auto &p : fs::directory_iterator(path)) {
     devices.push_back(Device(p.path().string()));
   }
 
+  make_tree_view();
+
+  show_all_children();
+
+}
+
+Window::~Window() {}
+
+void Window::make_tree_view() {
+  // Create the Tree model:
+  m_refTreeModel.clear();
+  m_refTreeModel = Gtk::TreeStore::create(m_Columns);
+  m_TreeView.set_model(m_refTreeModel);
+
   Gtk::TreeModel::Row row;
   Gtk::TreeModel::Row child_row;
   Gtk::TreeModel::Row baby_child_row;
+  
   for (unsigned int i = 0; i < devices.size(); i++) {
     // Get Readings
     std::vector<std::vector<std::pair<std::string, int>>> readings =
@@ -92,11 +93,54 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
   m_TreeView.signal_row_activated().connect(
       sigc::mem_fun(*this, &Window::on_treeview_row_activated));
 
-  show_all_children();
   m_TreeView.expand_all();
+
+  sigc::slot<bool> my_slot = sigc::bind(sigc::mem_fun(*this, &Window::update_tree_view), test);
+  sigc::connection conn = Glib::signal_timeout().connect(my_slot, 500);
 }
 
-Window::~Window() {}
+bool Window::update_tree_view(int x) {
+  Gtk::TreeModel::Children devices = m_refTreeModel->children();
+  unsigned int device_index = 0;
+  for(auto device : devices) {
+    // Get Readings
+    std::vector<std::vector<std::pair<std::string, int>>> readings =
+        this->devices[device_index].get_sensor_readings();
+    std::vector<std::pair<std::string, int>> temp_readings =
+        readings[TEMPERATURE];
+    std::vector<std::pair<std::string, int>> fan_readings = readings[FAN];
+
+    //Get Fan & Temp children of device
+    Gtk::TreeModel::Children sensor_types = device->children();
+    Gtk::TreeModel::Children::iterator iter_sensor_types = sensor_types.begin();
+
+    // Update temp readings
+    if (!temp_readings.empty()) {
+      Gtk::TreeModel::Children sensors = iter_sensor_types->children();
+      Gtk::TreeModel::Children::iterator iter_sensors = sensors.begin();
+      for (unsigned int j = 0; j < temp_readings.size(); j++, iter_sensors++) {
+        Gtk::TreeModel::Row values = *iter_sensors;
+        values[m_Columns.m_col_name] = temp_readings[j].first + ": ";
+        values[m_Columns.m_col_value] =
+            std::to_string(temp_readings[j].second / 1000);
+      }
+      iter_sensor_types++;
+    }
+    if (!fan_readings.empty()) {
+      Gtk::TreeModel::Children sensors = iter_sensor_types->children();
+      Gtk::TreeModel::Children::iterator iter_sensors = sensors.begin();
+      for (unsigned int j = 0; j < fan_readings.size(); j++, iter_sensors++) {
+        Gtk::TreeModel::Row values = *iter_sensors;
+        values[m_Columns.m_col_name] = fan_readings[j].first + ": ";
+        values[m_Columns.m_col_value] =
+            std::to_string(fan_readings[j].second);
+      }
+    }
+    device_index++;
+  }
+  std::cout << test++ << std::endl;
+  return true;
+}
 
 void Window::on_button_quit() { hide(); }
 
@@ -104,8 +148,9 @@ void Window::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
                                        Gtk::TreeViewColumn * /* column */) {
   Gtk::TreeModel::iterator iter = m_refTreeModel->get_iter(path);
   if (iter) {
-    Gtk::TreeModel::Row row = *iter;
-    std::cout << "Row activated: ID=" << row[m_Columns.m_col_name]
-              << ", Name=" << row[m_Columns.m_col_value] << std::endl;
+    //Gtk::TreeModel::Row row = *iter;
+    //row[m_Columns.m_col_name] = "poop";
+    //std::cout << "Row activated: ID=" << row[m_Columns.m_col_name]
+              //<< ", Name=" << row[m_Columns.m_col_value] << std::endl;
   }
 }

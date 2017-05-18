@@ -2,6 +2,10 @@
 #define WINDOW_H
 
 #include <gtkmm.h>
+#include "device.h"
+#include <experimental/filesystem>
+#include <iostream>
+#include <vector>
 
 class Window : public Gtk::Window {
 public:
@@ -9,6 +13,11 @@ public:
   virtual ~Window();
 
 protected:
+  int test = 0;
+  std::vector<Device> devices;
+  std::string path = "/sys/class/hwmon/";
+  bool update_tree_view(int x);
+  void make_tree_view();
   // Signal handlers:
   void on_button_quit();
   void on_treeview_row_activated(const Gtk::TreeModel::Path &path,
