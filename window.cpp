@@ -91,6 +91,11 @@ void Window::make_tree_view() {
 
   m_TreeView.expand_all();
   m_TreeView.set_enable_tree_lines(true);
+  m_TreeView.set_rules_hint(true);
+  m_TreeView.get_column(0)->set_expand(true);
+  for(int i = 0; i < 5; i++ ) {
+    m_TreeView.get_column(i)->set_resizable(true);
+  }
 
   // Start a new worker thread.
   m_Dispatcher.connect(sigc::mem_fun(*this, &Window::update_tree_view));
