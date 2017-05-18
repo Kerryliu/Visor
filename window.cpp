@@ -3,8 +3,8 @@
 namespace fs = std::experimental::filesystem;
 
 Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
-  set_title("Wow");
-  set_border_width(5);
+  set_title("Visor");
+  set_border_width(1);
   set_default_size(800, 600);
 
   add(m_VBox);
@@ -16,13 +16,13 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
   m_ScrolledWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
   m_VBox.pack_start(m_ScrolledWindow);
-  m_VBox.pack_start(m_ButtonBox, Gtk::PACK_SHRINK);
-
-  m_ButtonBox.pack_start(m_Button_Quit, Gtk::PACK_SHRINK);
-  m_ButtonBox.set_border_width(5);
-  m_ButtonBox.set_layout(Gtk::BUTTONBOX_END);
-  m_Button_Quit.signal_clicked().connect(
-      sigc::mem_fun(*this, &Window::on_button_quit));
+  // m_VBox.pack_start(m_ButtonBox, Gtk::PACK_SHRINK);
+  //
+  // m_ButtonBox.pack_start(m_Button_Quit, Gtk::PACK_SHRINK);
+  // m_ButtonBox.set_border_width(5);
+  // m_ButtonBox.set_layout(Gtk::BUTTONBOX_END);
+  // m_Button_Quit.signal_clicked().connect(
+  //     sigc::mem_fun(*this, &Window::on_button_quit));
 
   for (auto &p : fs::directory_iterator(path)) {
     devices.push_back(Device(p.path().string()));
@@ -45,7 +45,7 @@ void Window::make_tree_view() {
   Gtk::TreeModel::Row row;
   Gtk::TreeModel::Row child_row;
   Gtk::TreeModel::Row baby_child_row;
-  
+
   for (unsigned int i = 0; i < devices.size(); i++) {
     // Get Readings
     std::vector<std::vector<std::pair<std::string, int>>> readings =
