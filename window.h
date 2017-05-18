@@ -11,6 +11,7 @@
 #include <thread>
 
 using std::vector;
+using std::string;
 
 class Window : public Gtk::Window {
 public:

@@ -52,7 +52,7 @@ void Window::make_tree_view() {
 
   for (unsigned int i = 0; i < devices.size(); i++) {
     // Get Readings
-    vector<vector<std::pair<std::string, int>>> readings =
+    vector<vector<std::pair<string, int>>> readings =
         devices[i].get_sensor_readings();
 
     row = *(m_refTreeModel->append());
@@ -121,7 +121,7 @@ void Window::update_tree_view() {
   unsigned int device_index = 0;
   for (auto &device_row : rows) {
     // Get Readings
-    vector<vector<std::pair<std::string, int>>> readings =
+    vector<vector<std::pair<string, int>>> readings =
         this->devices[device_index].get_sensor_readings();
 
     // Get Fan & Temp children of device
