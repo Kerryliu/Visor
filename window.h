@@ -14,6 +14,7 @@
 using std::vector;
 using std::string;
 
+// Header file is very messy right now...
 class Window : public Gtk::Window {
 public:
   Window();
@@ -45,7 +46,7 @@ protected:
       add(m_col_average_value);
     }
 
-    Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf>> 		m_pixbuf;
+    Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf>> m_pixbuf;
     Gtk::TreeModelColumn<Glib::ustring> m_col_name;
     Gtk::TreeModelColumn<Glib::ustring> m_col_current_value;
     Gtk::TreeModelColumn<Glib::ustring> m_col_min_value;
@@ -57,6 +58,11 @@ protected:
 
   // Child widgets:
   Gtk::Box m_VBox;
+
+  Gtk::HeaderBar m_headerBar;
+
+  Gtk::StackSwitcher m_stackSwitcher;
+  Gtk::Stack m_stack;
 
   Gtk::ScrolledWindow m_ScrolledWindow;
   Gtk::TreeView m_TreeView;

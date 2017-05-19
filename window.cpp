@@ -5,25 +5,33 @@ namespace fs = std::experimental::filesystem;
 Window::Window()
     : m_Dispatcher(), m_WorkerThread(nullptr),
       m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
-  set_title("Visor");
+  // set_title("Visor");
   set_border_width(1);
   set_default_size(500, 600);
 
+  Gtk::Window::set_titlebar(m_headerBar);
   add(m_VBox);
 
-  // Add the TreeView, inside a ScrolledWindow, with the button underneath:
+  // Add the TreeView, inside a ScrolledWindow:
   m_ScrolledWindow.add(m_TreeView);
 
   // Only show the scrollbars when they are necessary:
   m_ScrolledWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
 
-  m_VBox.pack_start(m_ScrolledWindow);
+  // Attempt to make that stack:
+  m_stack.add(m_ScrolledWindow, "status", "Status");
+  m_stackSwitcher.set_stack(m_stack);
+  m_VBox.pack_end(m_stack);
 
-  // Find all devices
+  // HeaderBar:
+  m_headerBar.set_show_close_button(true);
+  m_headerBar.set_custom_title(m_stackSwitcher);
+
+  // Find all devices:
   for (auto &p : fs::directory_iterator(file_path)) {
     devices.push_back(Device(p.path().string()));
   }
-  // Get initial values
+  // Get initial values:
   for (auto &device : devices) {
     device.refresh_sensors();
   }
@@ -49,22 +57,24 @@ void Window::make_tree_view() {
 
     row = *(m_refTreeModel->append());
     row[m_Columns.m_col_name] = devices[i].name + ": ";
-    row[m_Columns.m_pixbuf] = Gdk::Pixbuf::create_from_file("assets/chip.svg",20,20,true);
+    row[m_Columns.m_pixbuf] =
+        Gdk::Pixbuf::create_from_file("assets/chip.svg", 20, 20, true);
 
     for (unsigned int sensor_type = 0; sensor_type < readings.size();
          sensor_type++) {
-      // Temperature
       if (!readings[sensor_type].empty()) {
         child_row = *(m_refTreeModel->append(row.children()));
         child_row[m_Columns.m_col_name] =
             devices[i].sensor_types[sensor_type] + ": ";
-        child_row[m_Columns.m_pixbuf] = Gdk::Pixbuf::create_from_file(devices[i].sensor_types_icons[sensor_type],20,20,true);
+        child_row[m_Columns.m_pixbuf] = Gdk::Pixbuf::create_from_file(
+            devices[i].sensor_types_icons[sensor_type], 20, 20, true);
 
         for (unsigned int j = 0; j < readings[sensor_type].size(); j++) {
           baby_child_row = *(m_refTreeModel->append(child_row.children()));
           baby_child_row[m_Columns.m_col_name] =
               readings[sensor_type][j].name + ": ";
-          baby_child_row[m_Columns.m_pixbuf] = Gdk::Pixbuf::create_from_file("assets/sensor.svg",20,20,true);
+          baby_child_row[m_Columns.m_pixbuf] =
+              Gdk::Pixbuf::create_from_file("assets/sensor.svg", 20, 20, true);
           baby_child_row[m_Columns.m_col_current_value] = Device::formatValue(
               readings[sensor_type][j].current_value, sensor_type);
           baby_child_row[m_Columns.m_col_min_value] = Device::formatValue(
@@ -78,7 +88,7 @@ void Window::make_tree_view() {
     }
   }
   // Add the TreeView's view columns:
-  Gtk::TreeView::Column* sensor_column = new Gtk::TreeView::Column("Sensor");
+  Gtk::TreeView::Column *sensor_column = new Gtk::TreeView::Column("Sensor");
   sensor_column->pack_start(m_Columns.m_pixbuf, false);
   sensor_column->pack_end(m_Columns.m_col_name, true);
   m_TreeView.append_column(*sensor_column);
@@ -95,7 +105,8 @@ void Window::make_tree_view() {
   m_TreeView.set_enable_tree_lines(true);
   m_TreeView.set_rules_hint(true);
   m_TreeView.get_column(0)->set_expand(true);
-  for(unsigned int i = 0; i < m_TreeView.get_n_columns(); i++ ) {
+
+  for (unsigned int i = 0; i < m_TreeView.get_n_columns(); i++) {
     m_TreeView.get_column(i)->set_resizable(true);
   }
 
@@ -127,7 +138,8 @@ void Window::update_tree_view() {
 
     // Get Fan & Temp children of device
     Gtk::TreeModel::Children sensor_types_row = device_row->children();
-    Gtk::TreeModel::Children::iterator iter_sensor_type = sensor_types_row.begin();
+    Gtk::TreeModel::Children::iterator iter_sensor_type =
+        sensor_types_row.begin();
 
     for (unsigned int sensor_type = 0; sensor_type < readings.size();
          sensor_type++) {
@@ -169,7 +181,8 @@ void Window::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
   if (iter) {
     Gtk::TreeModel::Row row = *iter;
     // row[m_Columns.m_col_name] = "poop";
-    std::cout << "Row activated: ID=" << row[m_Columns.m_col_name]
-              << ", Name=" << row[m_Columns.m_col_current_value] << std::endl;
+    std::cout << "Row activated: ID = " << row[m_Columns.m_col_name]
+              << ", Current Value = " << row[m_Columns.m_col_current_value]
+              << std::endl;
   }
 }
