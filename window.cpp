@@ -49,6 +49,7 @@ void Window::make_tree_view() {
 
     row = *(m_refTreeModel->append());
     row[m_Columns.m_col_name] = devices[i].name + ": ";
+    row[m_Columns.m_pixbuf] = Gdk::Pixbuf::create_from_file("assets/chip.svg",20,20,true);
 
     for (unsigned int sensor_type = 0; sensor_type < readings.size();
          sensor_type++) {
@@ -57,11 +58,13 @@ void Window::make_tree_view() {
         child_row = *(m_refTreeModel->append(row.children()));
         child_row[m_Columns.m_col_name] =
             devices[i].sensor_types[sensor_type] + ": ";
+        child_row[m_Columns.m_pixbuf] = Gdk::Pixbuf::create_from_file(devices[i].sensor_types_icons[sensor_type],20,20,true);
 
         for (unsigned int j = 0; j < readings[sensor_type].size(); j++) {
           baby_child_row = *(m_refTreeModel->append(child_row.children()));
           baby_child_row[m_Columns.m_col_name] =
               readings[sensor_type][j].name + ": ";
+          baby_child_row[m_Columns.m_pixbuf] = Gdk::Pixbuf::create_from_file("assets/sensor.svg",20,20,true);
           baby_child_row[m_Columns.m_col_current_value] = Device::formatValue(
               readings[sensor_type][j].current_value, sensor_type);
           baby_child_row[m_Columns.m_col_min_value] = Device::formatValue(
@@ -74,9 +77,11 @@ void Window::make_tree_view() {
       }
     }
   }
-
   // Add the TreeView's view columns:
-  m_TreeView.append_column("Sensor", m_Columns.m_col_name);
+  Gtk::TreeView::Column* sensor_column = new Gtk::TreeView::Column("Sensor");
+  sensor_column->pack_start(m_Columns.m_pixbuf, false);
+  sensor_column->pack_end(m_Columns.m_col_name, true);
+  m_TreeView.append_column(*sensor_column);
   m_TreeView.append_column("Current", m_Columns.m_col_current_value);
   m_TreeView.append_column("Min", m_Columns.m_col_min_value);
   m_TreeView.append_column("Max", m_Columns.m_col_max_value);
@@ -90,7 +95,7 @@ void Window::make_tree_view() {
   m_TreeView.set_enable_tree_lines(true);
   m_TreeView.set_rules_hint(true);
   m_TreeView.get_column(0)->set_expand(true);
-  for(int i = 0; i < 5; i++ ) {
+  for(unsigned int i = 0; i < m_TreeView.get_n_columns(); i++ ) {
     m_TreeView.get_column(i)->set_resizable(true);
   }
 
