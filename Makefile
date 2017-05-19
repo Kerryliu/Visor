@@ -1,4 +1,4 @@
-NAME=visor
+NAME=Visor
 GTKFLAGS=`pkg-config gtkmm-3.0 cairo --cflags --libs`
 MAGIC=-lstdc++fs
 SRC=base.cpp window.cpp device.cpp
