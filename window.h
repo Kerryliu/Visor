@@ -3,10 +3,7 @@
 
 #include "tree.h"
 #include <gtkmm.h>
-#include <iostream>
-#include <vector>
 
-using std::vector;
 using std::string;
 
 // Header file is very messy right now...
