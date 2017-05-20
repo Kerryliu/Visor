@@ -1,15 +1,15 @@
-#ifndef TREE_H
-#define TREE_H
+#ifndef SUMMARYTREE_H
+#define SUMMARYTREE_H
 
 #include "device.h"
 #include <gtkmm.h>
 #include <iostream>
 #include <thread>
 
-class Tree {
+class SummaryTree {
 public:
-  Tree();
-  ~Tree();
+  SummaryTree();
+  ~SummaryTree();
   Gtk::TreeView m_TreeView;
   Glib::RefPtr<Gtk::TreeStore> m_refTreeModel;
 

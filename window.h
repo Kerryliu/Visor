@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "tree.h"
+#include "summarytree.h"
 #include "graph.h"
 #include <gtkmm.h>
 
@@ -13,7 +13,7 @@ public:
   Window();
   virtual ~Window();
 protected:
-  Tree* tree = new Tree();
+  SummaryTree* tree = new SummaryTree();
   Graph* graph_temperatures = new Graph();
   Graph* graph_fans = new Graph();
   // Signal handlers:
