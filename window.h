@@ -14,7 +14,8 @@ public:
   virtual ~Window();
 protected:
   Tree* tree = new Tree();
-  Graph* graph = new Graph();
+  Graph* graph_temperatures = new Graph();
+  Graph* graph_fans = new Graph();
   // Signal handlers:
   void on_button_quit();
 
@@ -27,8 +28,7 @@ protected:
   Gtk::StackSwitcher m_stackSwitcher;
   Gtk::Stack m_stack;
 
-  Gtk::ScrolledWindow m_ScrolledWindow_first;
-  Gtk::ScrolledWindow m_ScrolledWindow_second;
+  Gtk::ScrolledWindow m_ScrolledWindow_summary;
 
   Gtk::ButtonBox m_ButtonBox;
   Gtk::Button m_Button_Quit;
