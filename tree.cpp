@@ -1,4 +1,4 @@
-#include "summarytree.h"
+#include "tree.h"
 #include <chrono>
 #include <experimental/filesystem>
 #include <gtkmm.h>
@@ -10,7 +10,7 @@
 
 namespace fs = std::experimental::filesystem;
 
-SummaryTree::SummaryTree() : m_Dispatcher(), m_WorkerThread(nullptr) {
+Tree::Tree() : m_Dispatcher(), m_WorkerThread(nullptr) {
   // Find all devices:
   for (auto &p : fs::directory_iterator(file_path)) {
     devices.push_back(Device(p.path().string()));
@@ -23,15 +23,15 @@ SummaryTree::SummaryTree() : m_Dispatcher(), m_WorkerThread(nullptr) {
   make_tree_view();
 
   // Start a new worker thread.
-  m_Dispatcher.connect(sigc::mem_fun(*this, &SummaryTree::update_tree_view));
+  m_Dispatcher.connect(sigc::mem_fun(*this, &Tree::update_tree_view));
   m_WorkerThread = new std::thread([this] { update_values(); });
 }
 
-SummaryTree::~SummaryTree() {
+Tree::~Tree() {
   delete m_Columns.sensor_column;
 }
 
-void SummaryTree::make_tree_view() {
+void Tree::make_tree_view() {
   m_refTreeModel = Gtk::TreeStore::create(m_Columns);
   m_TreeView.set_model(m_refTreeModel);
   Gtk::TreeModel::Row row;
@@ -87,7 +87,7 @@ void SummaryTree::make_tree_view() {
 
   // Connect signal:
   m_TreeView.signal_row_activated().connect(
-      sigc::mem_fun(*this, &SummaryTree::on_treeview_row_activated));
+      sigc::mem_fun(*this, &Tree::on_treeview_row_activated));
 
   m_TreeView.expand_all();
   m_TreeView.set_enable_tree_lines(true);
@@ -99,7 +99,7 @@ void SummaryTree::make_tree_view() {
   }
 }
 
-void SummaryTree::update_values() {
+void Tree::update_values() {
   while (1) {
     if (stop_work) {
       break;
@@ -112,7 +112,7 @@ void SummaryTree::update_values() {
   }
 }
 
-void SummaryTree::update_tree_view() {
+void Tree::update_tree_view() {
   Gtk::TreeModel::Children rows = m_refTreeModel->children();
   unsigned int device_index = 0;
   for (auto &device_row : rows) {
@@ -149,7 +149,7 @@ void SummaryTree::update_tree_view() {
   }
 }
 
-void SummaryTree::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
+void Tree::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
                                      Gtk::TreeViewColumn * /* column */) {
   Gtk::TreeModel::iterator iter = m_refTreeModel->get_iter(path);
   if (iter) {
@@ -161,7 +161,7 @@ void SummaryTree::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
   }
 }
 
-void SummaryTree::on_quit() {
+void Tree::on_quit() {
   if (m_WorkerThread) {
     // Order the worker thread to stop and wait for it to stop.
     stop_work = true;
