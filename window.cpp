@@ -1,7 +1,9 @@
 #include "window.h"
 
-Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
-  // set_title("Visor");
+Window::Window()
+    : m_VBox(Gtk::ORIENTATION_VERTICAL),
+      m_VPanedTemperature(Gtk::ORIENTATION_VERTICAL),
+      m_VPanedFan(Gtk::ORIENTATION_VERTICAL) {
   set_border_width(1);
   set_default_size(500, 600);
 
@@ -12,14 +14,19 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL), m_Button_Quit("Quit") {
   m_ScrolledWindow_summary.add(tree->m_TreeView);
 
   // Only show the scrollbars when they are necessary:
-  m_ScrolledWindow_summary.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+  m_ScrolledWindow_summary.set_policy(Gtk::POLICY_AUTOMATIC,
+                                      Gtk::POLICY_AUTOMATIC);
+
+  // Boxes for temperatures and fans:
+  m_VPanedTemperature.pack1(*graph_temperatures);
+  m_VPanedTemperature.pack2(*graph_fans);
 
   // Attempt to make that stack:
   m_stack.add(m_ScrolledWindow_summary, "summary", "Summary");
-  m_stack.add(*graph_temperatures, "temperatures", "Temperatures");
-  m_stack.add(*graph_fans, "fans", "Fans");
+  m_stack.add(m_VPanedTemperature, "temperatures", "Temperatures");
+  // m_stack.add(m_VBoxFan, "fans", "Fans");
   m_stackSwitcher.set_stack(m_stack);
-  m_VBox.pack_end(m_stack);
+  m_VBox.pack_start(m_stack);
 
   // HeaderBar:
   m_headerBar.set_show_close_button(true);

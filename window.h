@@ -12,7 +12,7 @@ class Window : public Gtk::Window {
 public:
   Window();
   virtual ~Window();
-protected:
+private:
   Tree* tree = new Tree();
   Graph* graph_temperatures = new Graph();
   Graph* graph_fans = new Graph();
@@ -28,10 +28,10 @@ protected:
   Gtk::StackSwitcher m_stackSwitcher;
   Gtk::Stack m_stack;
 
+  // These need to be below the stack for some reason
+  Gtk::Paned m_VPanedTemperature;
+  Gtk::Paned m_VPanedFan;
   Gtk::ScrolledWindow m_ScrolledWindow_summary;
-
-  Gtk::ButtonBox m_ButtonBox;
-  Gtk::Button m_Button_Quit;
 };
 
 #endif
