@@ -2,16 +2,9 @@
 #define TREE_H
 
 #include "device.h"
-#include <chrono>
-#include <experimental/filesystem>
 #include <gtkmm.h>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <thread>
-#include <vector>
-
-namespace fs = std::experimental::filesystem;
 
 class Tree {
 public:
@@ -21,6 +14,7 @@ public:
   Glib::RefPtr<Gtk::TreeStore> m_refTreeModel;
 
   void on_quit();
+
 private:
   vector<Device> devices;
   const std::string file_path = "/sys/class/hwmon/";
