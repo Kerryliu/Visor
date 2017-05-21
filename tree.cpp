@@ -1,11 +1,7 @@
 #include "tree.h"
-#include <chrono>
 #include <experimental/filesystem>
 #include <gtkmm.h>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <thread>
 #include <vector>
 
 namespace fs = std::experimental::filesystem;

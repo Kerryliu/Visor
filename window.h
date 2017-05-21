@@ -1,9 +1,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "tree.h"
 #include "graph.h"
+#include "tree.h"
 #include <gtkmm.h>
+#include <thread>
 
 using std::string;
 
@@ -12,6 +13,7 @@ class Window : public Gtk::Window {
 public:
   Window();
   virtual ~Window();
+
 private:
   Glib::Dispatcher m_Dispatcher;
   std::thread *m_WorkerThread;
@@ -21,9 +23,9 @@ private:
   vector<string> device_names;
   const std::string file_path = "/sys/class/hwmon/";
   bool stop_work = false;
-  Tree* tree;
-  Graph* graph_temperatures = new Graph();
-  Graph* graph_fans = new Graph();
+  Tree *tree;
+  Graph *graph_temperatures = new Graph();
+  Graph *graph_fans = new Graph();
 
   void update_values();
   void update_tree();

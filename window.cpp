@@ -1,10 +1,10 @@
+#include "graph.h"
+#include "tree.h"
 #include "window.h"
 #include <chrono>
 #include <experimental/filesystem>
 #include <gtkmm.h>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <thread>
 #include <vector>
 
@@ -85,9 +85,7 @@ void Window::update_values() {
   }
 }
 
-void Window::update_tree() {
-  tree->update_tree_view(all_readings);
-}
+void Window::update_tree() { tree->update_tree_view(all_readings); }
 
 void Window::on_button_quit() {
   if (m_WorkerThread) {

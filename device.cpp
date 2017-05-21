@@ -1,4 +1,12 @@
 #include "device.h"
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <vector>
+
+using std::vector;
+using std::string;
 
 const vector<string> Device::sensor_types({"Voltage", "Fan", "PWM",
                                            "Temperature"});

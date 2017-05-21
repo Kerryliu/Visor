@@ -4,7 +4,8 @@
 #include "device.h"
 #include <gtkmm.h>
 #include <iostream>
-#include <thread>
+
+using std::vector;
 
 class Tree {
 public:

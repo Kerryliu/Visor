@@ -3,11 +3,7 @@
 #define DEVICE_H
 
 #include <climits>
-#include <fstream>
-#include <iomanip>
-#include <sstream>
 #include <string>
-#include <utility>
 #include <vector>
 
 // Only doing 4 for now, for simplicity
