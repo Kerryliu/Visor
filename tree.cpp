@@ -72,10 +72,6 @@ void Tree::make_tree_view() {
   m_TreeView.append_column("Max", m_Columns.m_col_max_value);
   m_TreeView.append_column("Average", m_Columns.m_col_average_value);
 
-  // Connect signal:
-  m_TreeView.signal_row_activated().connect(
-      sigc::mem_fun(*this, &Tree::on_treeview_row_activated));
-
   m_TreeView.expand_all();
   m_TreeView.set_enable_tree_lines(true);
   m_TreeView.set_rules_hint(true);
@@ -122,17 +118,5 @@ void Tree::update_tree_view(
       }
     }
     device_index++;
-  }
-}
-
-void Tree::on_treeview_row_activated(const Gtk::TreeModel::Path &path,
-                                     Gtk::TreeViewColumn * /* column */) {
-  Gtk::TreeModel::iterator iter = m_refTreeModel->get_iter(path);
-  if (iter) {
-    Gtk::TreeModel::Row device_row = *iter;
-    // device_row[m_Columns.m_col_name] = "poop";
-    std::cout << "Row activated: ID = " << device_row[m_Columns.m_col_name]
-              << ", Current Value = " << device_row[m_Columns.m_col_current_value]
-              << std::endl;
   }
 }

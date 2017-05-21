@@ -45,8 +45,6 @@ private:
   ModelColumns m_Columns;
 
   void make_tree_view();
-  void on_treeview_row_activated(const Gtk::TreeModel::Path &path,
-                                 Gtk::TreeViewColumn *column);
 };
 
 #endif
