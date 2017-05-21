@@ -4,6 +4,7 @@
 #include "device.h"
 #include <gtkmm.h>
 #include <iostream>
+#include <memory>
 
 using std::vector;
 
@@ -12,7 +13,6 @@ public:
   Gtk::TreeView m_TreeView;
   Tree(vector<vector<vector<Device::sensor_reading>>> &all_readings,
        vector<string> &device_names);
-  ~Tree();
 
   void update_tree_view(
       vector<vector<vector<Device::sensor_reading>>> &all_readings);
@@ -34,7 +34,9 @@ private:
     }
 
     // Tree model columns:
-    Gtk::TreeView::Column *sensor_column = new Gtk::TreeView::Column("Sensor");
+    std::unique_ptr<Gtk::TreeView::Column> sensor_column =
+        std::make_unique<Gtk::TreeView::Column>(
+            Gtk::TreeView::Column("Sensor"));
     Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf>> m_pixbuf;
     Gtk::TreeModelColumn<Glib::ustring> m_col_name;
     Gtk::TreeModelColumn<Glib::ustring> m_col_current_value;

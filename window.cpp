@@ -23,11 +23,10 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
     all_readings.push_back(devices[device_index].get_sensor_readings());
     device_names.push_back(devices[device_index].name);
   }
-  tree = new Tree(all_readings, device_names);
+  tree = std::make_unique<Tree>(all_readings, device_names);
 
   // Start a new worker thread.
   m_Dispatcher.connect(sigc::mem_fun(*this, &Window::update_tree));
-  m_WorkerThread = new std::thread([this] { update_values(); });
 
   set_border_width(1);
   set_default_size(500, 600);
@@ -45,8 +44,8 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   // Set up that notebook:
   for (unsigned int page = 0; page < devices.size(); page++) {
     m_Notebook_Boxes.push_back(Gtk::Box(Gtk::ORIENTATION_VERTICAL));
-    m_Notebook_Temperature_Graphs.push_back(new Graph());
-    m_Notebook_Fan_Graphs.push_back(new Graph());
+    m_Notebook_Temperature_Graphs.push_back(std::make_unique<Graph>());
+    m_Notebook_Fan_Graphs.push_back(std::make_unique<Graph>());
     m_Notebook_Boxes[page].pack_end(*m_Notebook_Temperature_Graphs[page], true,
                                     true);
     m_Notebook_Boxes[page].pack_end(*m_Notebook_Fan_Graphs[page], true, true);
@@ -66,11 +65,7 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   show_all_children();
 }
 
-Window::~Window() {
-  delete tree;
-  // on_button_quit();
-  // delete m_WorkerThread;
-}
+Window::~Window() { on_button_quit(); }
 
 void Window::update_values() {
   while (1) {

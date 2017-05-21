@@ -14,8 +14,6 @@ Tree::Tree(vector<vector<vector<Device::sensor_reading>>> &all_readings,
   make_tree_view();
 }
 
-Tree::~Tree() { delete m_Columns.sensor_column; }
-
 void Tree::make_tree_view() {
   m_refTreeModel = Gtk::TreeStore::create(m_Columns);
   m_TreeView.set_model(m_refTreeModel);

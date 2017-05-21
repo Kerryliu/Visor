@@ -1,17 +1,12 @@
 #include "graph.h"
 #include <gtkmm/drawingarea.h>
 
-Graph::Graph() {
+Graph::Graph() {}
 
-}
-
-Graph::~Graph() {
-
-}
+Graph::~Graph() {}
 
 // https://developer.gnome.org/gtkmm-tutorial/stable/chapter-drawingarea.html.en
-bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
-{
+bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   Gtk::Allocation allocation = get_allocation();
   const int width = allocation.get_width();
   const int height = allocation.get_height();
