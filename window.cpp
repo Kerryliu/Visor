@@ -51,8 +51,7 @@ Window::Window()
 
   // Attempt to make that stack:
   m_stack.add(m_ScrolledWindow_summary, "summary", "Summary");
-  m_stack.add(m_VPanedTemperature, "temperatures", "Temperatures");
-  // m_stack.add(m_VBoxFan, "fans", "Fans");
+  m_stack.add(m_VPanedTemperature, "graphs", "Graphs");
   m_stackSwitcher.set_stack(m_stack);
   m_VBox.pack_start(m_stack);
 
