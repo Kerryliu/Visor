@@ -34,9 +34,9 @@ public:
   const string file_path;
   const string name;
   // Make sure follow vectors have same size or shit will hit the fan
-  const vector<string> sensor_types = {"Voltage", "Fan", "PWM", "Temperature"};
-  const vector<string> sensor_types_paths = {"/in", "/fan", "/pwm", "/temp"};
-  const vector<string> sensor_types_icons = {"assets/in.svg", "assets/fan.svg", "assets/pwm.svg", "assets/temp.svg"};
+  static const vector<string> sensor_types;
+  static const vector<string> sensor_types_paths;
+  static const vector<string> sensor_types_icons;
 
   const vector<unsigned int> sensor_type_counts =
       vector<unsigned int>(sensor_types.size());

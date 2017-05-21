@@ -13,12 +13,23 @@ public:
   Window();
   virtual ~Window();
 private:
-  Tree* tree = new Tree();
+  Glib::Dispatcher m_Dispatcher;
+  std::thread *m_WorkerThread;
+
+  vector<Device> devices;
+  vector<vector<vector<Device::sensor_reading>>> all_readings;
+  vector<string> device_names;
+  const std::string file_path = "/sys/class/hwmon/";
+  bool stop_work = false;
+  Tree* tree;
   Graph* graph_temperatures = new Graph();
   Graph* graph_fans = new Graph();
+
+  void update_values();
+  void update_tree();
+
   // Signal handlers:
   void on_button_quit();
-
 
   // Child widgets:
   Gtk::Box m_VBox;

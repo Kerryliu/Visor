@@ -1,5 +1,12 @@
 #include "device.h"
 
+const vector<string> Device::sensor_types({"Voltage", "Fan", "PWM",
+                                           "Temperature"});
+const vector<string> Device::sensor_types_paths({"/in", "/fan", "/pwm",
+                                                 "/temp"});
+const vector<string> Device::sensor_types_icons(
+    {"assets/in.svg", "assets/fan.svg", "assets/pwm.svg", "assets/temp.svg"});
+
 Device::Device(string file_path)
     : file_path(file_path), name(set_name(file_path)),
       sensor_type_counts(set_sensor_count(file_path)) {

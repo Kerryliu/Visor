@@ -8,20 +8,18 @@
 
 class Tree {
 public:
-  Tree();
-  ~Tree();
   Gtk::TreeView m_TreeView;
-  Glib::RefPtr<Gtk::TreeStore> m_refTreeModel;
+  Tree(vector<vector<vector<Device::sensor_reading>>> &all_readings,
+       vector<string> &device_names);
+  ~Tree();
 
-  void on_quit();
+  void update_tree_view(
+      vector<vector<vector<Device::sensor_reading>>> &all_readings);
 
 private:
-  vector<Device> devices;
-  const std::string file_path = "/sys/class/hwmon/";
-  bool stop_work = false;
-
-  Glib::Dispatcher m_Dispatcher;
-  std::thread *m_WorkerThread;
+  vector<vector<vector<Device::sensor_reading>>> all_readings;
+  vector<string> device_names;
+  Glib::RefPtr<Gtk::TreeStore> m_refTreeModel;
 
   class ModelColumns : public Gtk::TreeModel::ColumnRecord {
   public:
@@ -47,9 +45,6 @@ private:
   ModelColumns m_Columns;
 
   void make_tree_view();
-  void update_values();
-  void update_tree_view();
-
   void on_treeview_row_activated(const Gtk::TreeModel::Path &path,
                                  Gtk::TreeViewColumn *column);
 };
