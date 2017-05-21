@@ -10,10 +10,7 @@
 
 namespace fs = std::experimental::filesystem;
 
-Window::Window()
-    : m_VBox(Gtk::ORIENTATION_VERTICAL),
-      m_VPanedTemperature(Gtk::ORIENTATION_VERTICAL),
-      m_VPanedFan(Gtk::ORIENTATION_VERTICAL) {
+Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
 
   // Find all devices:
   for (auto &p : fs::directory_iterator(file_path)) {
@@ -45,13 +42,20 @@ Window::Window()
   m_ScrolledWindow_summary.set_policy(Gtk::POLICY_AUTOMATIC,
                                       Gtk::POLICY_AUTOMATIC);
 
-  // Boxes for temperatures and fans:
-  m_VPanedTemperature.pack1(*graph_temperatures);
-  m_VPanedTemperature.pack2(*graph_fans);
+  // Set up that notebook:
+  for (unsigned int page = 0; page < devices.size(); page++) {
+    m_Notebook_Boxes.push_back(Gtk::Box(Gtk::ORIENTATION_VERTICAL));
+    m_Notebook_Temperature_Graphs.push_back(new Graph());
+    m_Notebook_Fan_Graphs.push_back(new Graph());
+    m_Notebook_Boxes[page].pack_end(*m_Notebook_Temperature_Graphs[page], true,
+                                    true);
+    m_Notebook_Boxes[page].pack_end(*m_Notebook_Fan_Graphs[page], true, true);
+    m_Notebook.append_page(m_Notebook_Boxes[page], devices[page].name);
+  }
 
   // Attempt to make that stack:
   m_stack.add(m_ScrolledWindow_summary, "summary", "Summary");
-  m_stack.add(m_VPanedTemperature, "graphs", "Graphs");
+  m_stack.add(m_Notebook, "graphs", "Graphs");
   m_stackSwitcher.set_stack(m_stack);
   m_VBox.pack_start(m_stack);
 
@@ -64,8 +68,6 @@ Window::Window()
 
 Window::~Window() {
   delete tree;
-  delete graph_temperatures;
-  delete graph_fans;
   // on_button_quit();
   // delete m_WorkerThread;
 }

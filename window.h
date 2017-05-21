@@ -5,6 +5,7 @@
 #include "tree.h"
 #include <gtkmm.h>
 #include <thread>
+#include <vector>
 
 using std::string;
 
@@ -24,8 +25,6 @@ private:
   const std::string file_path = "/sys/class/hwmon/";
   bool stop_work = false;
   Tree *tree;
-  Graph *graph_temperatures = new Graph();
-  Graph *graph_fans = new Graph();
 
   void update_values();
   void update_tree();
@@ -41,9 +40,11 @@ private:
   Gtk::StackSwitcher m_stackSwitcher;
   Gtk::Stack m_stack;
 
+  Gtk::Notebook m_Notebook;
+  vector<Gtk::Box> m_Notebook_Boxes;
+  vector<Graph*> m_Notebook_Temperature_Graphs;
+  vector<Graph*> m_Notebook_Fan_Graphs;
   // These need to be below the stack for some reason
-  Gtk::Paned m_VPanedTemperature;
-  Gtk::Paned m_VPanedFan;
   Gtk::ScrolledWindow m_ScrolledWindow_summary;
 };
 
