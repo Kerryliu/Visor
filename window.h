@@ -45,8 +45,7 @@ private:
   // These need to be below the stack for some reason
   Gtk::Notebook m_Notebook;
   vector<Gtk::Box> m_Notebook_Boxes;
-  vector<std::unique_ptr<Graph>> m_Notebook_Temperature_Graphs;
-  vector<std::unique_ptr<Graph>> m_Notebook_Fan_Graphs;
+  vector<vector<std::unique_ptr<Graph>>> m_Notebook_Graphs;
   Gtk::ScrolledWindow m_ScrolledWindow_summary;
 };
 

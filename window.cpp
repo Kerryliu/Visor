@@ -42,17 +42,22 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   // Only show the scrollbars when they are necessary:
   m_ScrolledWindow_summary.set_policy(Gtk::POLICY_AUTOMATIC,
                                       Gtk::POLICY_AUTOMATIC);
-
-  // Set up that notebook:
+  // Setup that notebook
+  m_Notebook_Graphs.resize(devices.size());
   for (unsigned int page = 0; page < devices.size(); page++) {
     m_Notebook_Boxes.push_back(Gtk::Box(Gtk::ORIENTATION_VERTICAL));
-    m_Notebook_Temperature_Graphs.push_back(
-        std::make_unique<Graph>(devices[page], TEMPERATURE));
-    m_Notebook_Fan_Graphs.push_back(
-        std::make_unique<Graph>(devices[page], FAN));
-    m_Notebook_Boxes[page].pack_start(*m_Notebook_Temperature_Graphs[page],
-                                      true, true);
-    m_Notebook_Boxes[page].pack_end(*m_Notebook_Fan_Graphs[page], true, true);
+    vector<vector<Device::sensor_reading>> device_readings =
+        devices[page].get_sensor_readings();
+    for (unsigned int sensor_type = 1; sensor_type < device_readings.size();
+         sensor_type+=2) { //Skip voltage and pwm
+      if (!device_readings[sensor_type].empty()) {
+        m_Notebook_Graphs[page].push_back(
+            std::make_unique<Graph>(devices[page], sensor_type));
+      }
+    }
+    for (auto &graph : m_Notebook_Graphs[page]) {
+      m_Notebook_Boxes[page].pack_start(*graph, true, true);
+    }
     m_Notebook.append_page(m_Notebook_Boxes[page], devices[page].name);
   }
 

@@ -40,7 +40,7 @@ void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
 
 void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   // Draw outer rectangle:
-  const int bottom_offset = -25;
+  const int bottom_offset = -15;
   const int left_offset = 0;
   unsigned int rectangle_height = height - 150;
   unsigned int rectangle_width = width - 100;
