@@ -24,8 +24,8 @@ private:
   const vector<unsigned int> max_type_values = { 10, 3000, 10, 100 };
   vector<Device::sensor_reading> device_readings;
 
-  void draw_title(const Cairo::RefPtr<Cairo::Context> &cr);
   void gen_colors();
+  void draw_title(const Cairo::RefPtr<Cairo::Context> &cr);
   void draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
                        int legend_offset);
   int draw_legend(const Cairo::RefPtr<Cairo::Context> &cr);

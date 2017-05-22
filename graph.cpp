@@ -20,6 +20,33 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   return true;
 }
 
+void Graph::gen_colors() {
+  double r = 0;
+  double g = 0;
+  double b = 0;
+  double stepping = 3 / (double)device_readings.size();
+  for (unsigned sensor_index = 0; sensor_index < device_readings.size();
+       sensor_index++) {
+    if (sensor_index % 3 == 0) { // 0, 3, 6...
+      r += stepping;
+      if (b == 1) {
+        b = 0;
+      }
+    } else if ((sensor_index + 1) % 3 == 0) { // 1, 4, 5..
+      g += stepping;
+      if (r == 1) {
+        r = 0;
+      }
+    } else { // 2, 5, 7...
+      b += stepping;
+      if (g == 1) {
+        g = 0;
+      }
+    }
+    colors.push_back({r, g, b});
+  }
+}
+
 void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
   const int left_offset = 10;
   const int top_offset = 10;
@@ -89,36 +116,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
   cr->stroke();
 }
 
-void Graph::gen_colors() {
-  double r = 0;
-  double g = 0;
-  double b = 0;
-  double stepping = 3 / (double)device_readings.size();
-  for (unsigned sensor_index = 0; sensor_index < device_readings.size();
-       sensor_index++) {
-    if (sensor_index % 3 == 0) { // 0, 3, 6...
-      r += stepping;
-      if (b == 1) {
-        b = 0;
-      }
-    } else if ((sensor_index + 1) % 3 == 0) { // 1, 4, 5..
-      g += stepping;
-      if (r == 1) {
-        r = 0;
-      }
-    } else { // 2, 5, 7...
-      b += stepping;
-      if (g == 1) {
-        g = 0;
-      }
-    }
-    colors.push_back({r, g, b});
-  }
-}
-
 int Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
   // First run if no colors have been made: (This needs work)
-
   const unsigned int bottom_offset = 5;
   const unsigned int side_offset = 50;
   const unsigned int line_spacing = 20;
