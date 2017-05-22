@@ -18,14 +18,12 @@ protected:
 private:
   int width;
   int height;
-  // const int width = allocation.get_width();
-  // const int height = allocation.get_height();
 
   void draw_title(const Cairo::RefPtr<Cairo::Context> &cr);
-  void draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr);
+  void draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr, int legend_offset);
+  int draw_legend(const Cairo::RefPtr<Cairo::Context> &cr);
   int type;
   vector<Device::sensor_reading> device_readings;
-  // Device device;
 };
 
 #endif

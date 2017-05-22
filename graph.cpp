@@ -13,7 +13,8 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   width = allocation.get_width();
   height = allocation.get_height();
   draw_title(cr);
-  draw_graph_grid(cr);
+  int bottom_offset = draw_legend(cr);
+  draw_graph_grid(cr, bottom_offset);
   return true;
 }
 
@@ -30,27 +31,23 @@ void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
   auto layout = create_pango_layout(Device::sensor_types[type]);
 
   layout->set_font_description(font);
-
-  int text_width;
-  int text_height;
-
-  // get the text dimensions (it updates the variables -- by reference)
-  layout->get_pixel_size(text_width, text_height);
   layout->show_in_cairo_context(cr);
 }
 
-void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
+void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
+                            int legend_offset) {
   // Draw outer rectangle:
-  const int bottom_offset = -30;
   const int left_offset = 0;
-  unsigned int rectangle_height = height - 150;
+  int bottom_offset = 20;
+  unsigned int rectangle_height = height - 50;
   unsigned int rectangle_width = width - 100;
   unsigned int x_coord = (width - rectangle_width) / 2 + left_offset;
   unsigned int y_coord = (height - rectangle_height) / 2 + bottom_offset;
   const double fifty_shades_of_grey = 0.9;
   cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
                      fifty_shades_of_grey);
-  cr->rectangle(x_coord, y_coord, rectangle_width, rectangle_height);
+  cr->rectangle(x_coord, y_coord, rectangle_width,
+                rectangle_height - legend_offset);
   cr->fill();
 
   // Draw inner rectangle:
@@ -60,7 +57,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   x_coord = (width - rectangle_width) / 2 + left_offset;
   y_coord = (height - rectangle_height) / 2 + bottom_offset;
   cr->set_source_rgb(1, 1, 1);
-  cr->rectangle(x_coord, y_coord, rectangle_width, rectangle_height);
+  cr->rectangle(x_coord, y_coord, rectangle_width,
+                rectangle_height - legend_offset);
   cr->fill();
 
   // Draw lines:
@@ -69,12 +67,12 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
                      fifty_shades_of_grey);
   // Vertical:
   const unsigned int max_line_count = 5;
-  const unsigned int min_line_spacing = 25;
+  const unsigned int min_line_spacing = 40;
   unsigned int line_count =
-      (rectangle_height / min_line_spacing > max_line_count)
+      ((rectangle_height) / min_line_spacing > max_line_count)
           ? max_line_count
           : rectangle_height / min_line_spacing;
-  unsigned int line_spacing = rectangle_height / line_count;
+  unsigned int line_spacing = (rectangle_height - legend_offset) / line_count;
   for (unsigned int line_index = 1; line_index < line_count; line_index++) {
     cr->move_to(x_coord, y_coord + line_spacing * line_index);
     cr->line_to(x_coord + rectangle_width, y_coord + line_spacing * line_index);
@@ -84,7 +82,71 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   for (unsigned int line_index = 1; line_index < max_line_count; line_index++) {
     cr->move_to(x_coord + line_spacing * line_index, y_coord);
     cr->line_to(x_coord + line_spacing * line_index,
-                y_coord + rectangle_height);
+                y_coord + rectangle_height - legend_offset);
   }
   cr->stroke();
+}
+
+int Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
+  vector<vector<double>> colors;
+  // First run if no colors have been made:
+  if (colors.empty()) {
+    double r = 0;
+    double g = 0;
+    double b = 0;
+    const double stepping = device_readings.size() / 3;
+    for (unsigned sensor_index = 0; sensor_index < device_readings.size();
+         sensor_index++) {
+      if (sensor_index % 3 == 0) { // 0, 3, 6...
+        r += stepping;
+      } else if ((sensor_index + 1) % 3 == 0) { // 1, 4, 5..
+        g += stepping;
+      } else { // 2, 5, 7...
+        b += stepping;
+      }
+      vector<double> rgb = {r, g, b};
+      colors.push_back(rgb);
+    }
+  }
+  const unsigned int bottom_offset = 5;
+  const unsigned int side_offset = 50;
+  const unsigned int line_spacing = 20;
+  const unsigned int min_spacing = 80;
+  const unsigned int working_area = (width - side_offset * 2);
+  unsigned int spacing;
+  unsigned int num_lines;
+  unsigned int devices_per_line;
+  // Calulate spacing between keys:
+  if (working_area / min_spacing > device_readings.size()) { // One line
+    spacing = working_area / device_readings.size();
+    devices_per_line = device_readings.size();
+    num_lines = 1;
+  } else { // More lines
+    spacing = min_spacing;
+    devices_per_line = working_area / min_spacing;
+    num_lines =
+        (device_readings.size() + devices_per_line - 1) / devices_per_line;
+  }
+  // Attempt to draw the damn thing:
+  for (unsigned int line_index = 0; line_index < num_lines; line_index++) {
+    unsigned int y_coord =
+        height - bottom_offset - (line_spacing * (num_lines - line_index));
+    // Black
+    cr->set_source_rgb(0, 0, 0);
+    Pango::FontDescription font;
+    for (unsigned int spacing_index = 0; spacing_index < devices_per_line;
+         spacing_index++) {
+      unsigned int x_coord = side_offset + spacing * spacing_index;
+      cr->move_to(x_coord, y_coord);
+      unsigned int device_index = spacing_index + devices_per_line * line_index;
+      if (device_index >= device_readings.size()) {
+        break;
+      }
+      auto layout = create_pango_layout(device_readings[device_index].name);
+      layout->set_font_description(font);
+      layout->show_in_cairo_context(cr);
+    }
+  }
+  int legend_offset = line_spacing * num_lines + bottom_offset;
+  return legend_offset;
 }
