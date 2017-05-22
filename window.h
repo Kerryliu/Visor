@@ -15,12 +15,12 @@ class Window : public Gtk::Window {
 public:
   Window();
   virtual ~Window();
+  void update_graph();
 
 private:
   Glib::Dispatcher m_Dispatcher;
   std::unique_ptr<std::thread> m_WorkerThread =
       std::make_unique<std::thread>([this] { update_values(); });
-
   vector<Device> devices;
   vector<vector<vector<Device::sensor_reading>>> all_readings;
   vector<string> device_names;

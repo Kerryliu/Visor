@@ -33,6 +33,7 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   set_default_size(500, 600);
 
   Gtk::Window::set_titlebar(m_headerBar);
+  m_VBox.set_size_request(300, 400);
   add(m_VBox);
 
   // Add the TreeView, inside a ScrolledWindow:
@@ -49,8 +50,8 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
         std::make_unique<Graph>(devices[page], TEMPERATURE));
     m_Notebook_Fan_Graphs.push_back(
         std::make_unique<Graph>(devices[page], FAN));
-    m_Notebook_Boxes[page].pack_start(*m_Notebook_Temperature_Graphs[page], true,
-                                    true);
+    m_Notebook_Boxes[page].pack_start(*m_Notebook_Temperature_Graphs[page],
+                                      true, true);
     m_Notebook_Boxes[page].pack_end(*m_Notebook_Fan_Graphs[page], true, true);
     m_Notebook.append_page(m_Notebook_Boxes[page], devices[page].name);
   }
@@ -86,6 +87,8 @@ void Window::update_values() {
 }
 
 void Window::update_tree() { tree->update_tree_view(all_readings); }
+
+void Window::update_graph() { std::cout << "hmmm" << std::endl; }
 
 void Window::on_button_quit() {
   if (m_WorkerThread) {
