@@ -1,6 +1,9 @@
 #include "graph.h"
 #include <gtkmm/drawingarea.h>
 #include <iostream>
+#include <vector>
+
+using std::vector;
 
 Graph::Graph(const vector<Device::sensor_reading> &device_readings, int type)
     : type(type), device_readings(device_readings) {
@@ -63,59 +66,6 @@ void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
   layout->show_in_cairo_context(cr);
 }
 
-void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
-                            int legend_offset) {
-  // Draw outer rectangle:
-  const int left_offset = 0;
-  int bottom_offset = 20;
-  unsigned int rectangle_height = height - 50;
-  unsigned int rectangle_width = width - 100;
-  unsigned int x_coord = (width - rectangle_width) / 2 + left_offset;
-  unsigned int y_coord = (height - rectangle_height) / 2 + bottom_offset;
-  const double fifty_shades_of_grey = 0.9;
-  cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
-                     fifty_shades_of_grey);
-  cr->rectangle(x_coord, y_coord, rectangle_width,
-                rectangle_height - legend_offset);
-  cr->fill();
-
-  // Draw inner rectangle:
-  const int inner_offset = 2;
-  rectangle_height -= inner_offset;
-  rectangle_width -= inner_offset;
-  x_coord = (width - rectangle_width) / 2 + left_offset;
-  y_coord = (height - rectangle_height) / 2 + bottom_offset;
-  cr->set_source_rgb(1, 1, 1);
-  cr->rectangle(x_coord, y_coord, rectangle_width,
-                rectangle_height - legend_offset);
-  cr->fill();
-
-  // Draw lines:
-  cr->set_line_width(1);
-  cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
-                     fifty_shades_of_grey);
-  // Vertical:
-  const unsigned int max_line_count = 5;
-  const unsigned int min_line_spacing = 40;
-  unsigned int line_count =
-      ((rectangle_height) / min_line_spacing > max_line_count)
-          ? max_line_count
-          : rectangle_height / min_line_spacing;
-  unsigned int line_spacing = (rectangle_height - legend_offset) / line_count;
-  for (unsigned int line_index = 1; line_index < line_count; line_index++) {
-    cr->move_to(x_coord, y_coord + line_spacing * line_index);
-    cr->line_to(x_coord + rectangle_width, y_coord + line_spacing * line_index);
-  }
-  // Horizontal:
-  line_spacing = rectangle_width / max_line_count;
-  for (unsigned int line_index = 1; line_index < max_line_count; line_index++) {
-    cr->move_to(x_coord + line_spacing * line_index, y_coord);
-    cr->line_to(x_coord + line_spacing * line_index,
-                y_coord + rectangle_height - legend_offset);
-  }
-  cr->stroke();
-}
-
 int Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
   // First run if no colors have been made: (This needs work)
   const unsigned int bottom_offset = 5;
@@ -150,4 +100,59 @@ int Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
   }
   int legend_offset = line_spacing * num_lines + bottom_offset;
   return legend_offset;
+}
+
+const vector<unsigned int>
+Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
+                       int legend_offset) {
+  // Draw outer rectangle:
+  const int left_offset = 0;
+  int bottom_offset = 20;
+  unsigned int rectangle_height = height - 50;
+  unsigned int rectangle_width = width - 100;
+  unsigned int x_coord = (width - rectangle_width) / 2 + left_offset;
+  unsigned int y_coord = (height - rectangle_height) / 2 + bottom_offset;
+  const double fifty_shades_of_grey = 0.9;
+  cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
+                     fifty_shades_of_grey);
+  cr->rectangle(x_coord, y_coord, rectangle_width,
+                rectangle_height - legend_offset);
+  cr->fill();
+
+  // Draw inner rectangle:
+  const int inner_offset = 2;
+  rectangle_height -= inner_offset;
+  rectangle_width -= inner_offset;
+  x_coord = (width - rectangle_width) / 2 + left_offset;
+  y_coord = (height - rectangle_height) / 2 + bottom_offset;
+  cr->set_source_rgb(1, 1, 1);
+  cr->rectangle(x_coord, y_coord, rectangle_width,
+                rectangle_height - legend_offset);
+  cr->fill();
+
+  // Draw lines:
+  cr->set_line_width(1);
+  cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
+                     fifty_shades_of_grey);
+  // Vertical:
+  const unsigned int max_line_count = 10;
+  const unsigned int min_line_spacing = 40;
+  unsigned int line_count =
+      ((rectangle_height) / min_line_spacing > max_line_count)
+          ? max_line_count
+          : rectangle_height / min_line_spacing;
+  unsigned int line_spacing = (rectangle_height - legend_offset) / line_count;
+  for (unsigned int line_index = 1; line_index < line_count; line_index++) {
+    cr->move_to(x_coord, y_coord + line_spacing * line_index);
+    cr->line_to(x_coord + rectangle_width, y_coord + line_spacing * line_index);
+  }
+  // Horizontal:
+  line_spacing = rectangle_width / max_line_count;
+  for (unsigned int line_index = 1; line_index < max_line_count; line_index++) {
+    cr->move_to(x_coord + line_spacing * line_index, y_coord);
+    cr->line_to(x_coord + line_spacing * line_index,
+                y_coord + rectangle_height - legend_offset);
+  }
+  cr->stroke();
+  return {x_coord, y_coord, rectangle_width, rectangle_height - legend_offset};
 }
