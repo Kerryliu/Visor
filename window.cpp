@@ -1,3 +1,4 @@
+#include "device.h"
 #include "graph.h"
 #include "tree.h"
 #include "window.h"
@@ -44,9 +45,11 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   // Set up that notebook:
   for (unsigned int page = 0; page < devices.size(); page++) {
     m_Notebook_Boxes.push_back(Gtk::Box(Gtk::ORIENTATION_VERTICAL));
-    m_Notebook_Temperature_Graphs.push_back(std::make_unique<Graph>());
-    m_Notebook_Fan_Graphs.push_back(std::make_unique<Graph>());
-    m_Notebook_Boxes[page].pack_end(*m_Notebook_Temperature_Graphs[page], true,
+    m_Notebook_Temperature_Graphs.push_back(
+        std::make_unique<Graph>(devices[page], TEMPERATURE));
+    m_Notebook_Fan_Graphs.push_back(
+        std::make_unique<Graph>(devices[page], FAN));
+    m_Notebook_Boxes[page].pack_start(*m_Notebook_Temperature_Graphs[page], true,
                                     true);
     m_Notebook_Boxes[page].pack_end(*m_Notebook_Fan_Graphs[page], true, true);
     m_Notebook.append_page(m_Notebook_Boxes[page], devices[page].name);
