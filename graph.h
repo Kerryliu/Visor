@@ -8,8 +8,7 @@
 
 class Graph : public Gtk::DrawingArea {
 public:
-  Graph(const vector<Device::sensor_reading> &device_readings,
-        int type);
+  Graph(const vector<Device::sensor_reading> &device_readings, int type);
   virtual ~Graph();
 
 protected:
@@ -19,11 +18,16 @@ private:
   int width;
   int height;
 
-  void draw_title(const Cairo::RefPtr<Cairo::Context> &cr);
-  void draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr, int legend_offset);
-  int draw_legend(const Cairo::RefPtr<Cairo::Context> &cr);
-  int type;
+  vector<vector<double>> colors;
+
+  const unsigned int type;
+  const vector<unsigned int> max_type_values = { 10, 3000, 10, 100 };
   vector<Device::sensor_reading> device_readings;
+
+  void draw_title(const Cairo::RefPtr<Cairo::Context> &cr);
+  void draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
+                       int legend_offset);
+  int draw_legend(const Cairo::RefPtr<Cairo::Context> &cr);
 };
 
 #endif

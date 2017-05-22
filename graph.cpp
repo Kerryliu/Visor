@@ -88,60 +88,58 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
 }
 
 int Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
-  vector<vector<double>> colors;
-  // First run if no colors have been made:
+  // First run if no colors have been made: (This needs work)
   if (colors.empty()) {
     double r = 0;
     double g = 0;
     double b = 0;
-    const double stepping = device_readings.size() / 3;
+    double stepping = 3 / (double)device_readings.size();
     for (unsigned sensor_index = 0; sensor_index < device_readings.size();
          sensor_index++) {
       if (sensor_index % 3 == 0) { // 0, 3, 6...
         r += stepping;
+        if(b == 1) {
+          b = 0;
+        }
       } else if ((sensor_index + 1) % 3 == 0) { // 1, 4, 5..
         g += stepping;
+        if(r == 1) {
+          r = 0;
+        }
       } else { // 2, 5, 7...
         b += stepping;
+        if(g == 1) {
+          g = 0;
+        }
       }
-      vector<double> rgb = {r, g, b};
-      colors.push_back(rgb);
+      colors.push_back({r, g, b});
     }
   }
   const unsigned int bottom_offset = 5;
   const unsigned int side_offset = 50;
   const unsigned int line_spacing = 20;
-  const unsigned int min_spacing = 80;
   const unsigned int working_area = (width - side_offset * 2);
-  unsigned int spacing;
+  const unsigned int devices_per_line = 4;
+  const unsigned int spacing = working_area / devices_per_line;
   unsigned int num_lines;
-  unsigned int devices_per_line;
   // Calulate spacing between keys:
-  if (working_area / min_spacing > device_readings.size()) { // One line
-    spacing = working_area / device_readings.size();
-    devices_per_line = device_readings.size();
-    num_lines = 1;
-  } else { // More lines
-    spacing = min_spacing;
-    devices_per_line = working_area / min_spacing;
-    num_lines =
-        (device_readings.size() + devices_per_line - 1) / devices_per_line;
-  }
+  num_lines =
+      (device_readings.size() + devices_per_line - 1) / devices_per_line;
   // Attempt to draw the damn thing:
   for (unsigned int line_index = 0; line_index < num_lines; line_index++) {
     unsigned int y_coord =
         height - bottom_offset - (line_spacing * (num_lines - line_index));
-    // Black
-    cr->set_source_rgb(0, 0, 0);
     Pango::FontDescription font;
     for (unsigned int spacing_index = 0; spacing_index < devices_per_line;
          spacing_index++) {
       unsigned int x_coord = side_offset + spacing * spacing_index;
-      cr->move_to(x_coord, y_coord);
       unsigned int device_index = spacing_index + devices_per_line * line_index;
       if (device_index >= device_readings.size()) {
         break;
       }
+      cr->move_to(x_coord, y_coord);
+      cr->set_source_rgb(colors[device_index][0], colors[device_index][1],
+                         colors[device_index][2]);
       auto layout = create_pango_layout(device_readings[device_index].name);
       layout->set_font_description(font);
       layout->show_in_cairo_context(cr);

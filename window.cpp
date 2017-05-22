@@ -33,7 +33,7 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   set_default_size(500, 600);
 
   Gtk::Window::set_titlebar(m_headerBar);
-  m_VBox.set_size_request(300, 400);
+  m_VBox.set_size_request(500, 500);
   add(m_VBox);
 
   // Add the TreeView, inside a ScrolledWindow:
