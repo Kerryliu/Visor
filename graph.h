@@ -33,6 +33,7 @@ private:
   // Returns top left and bottom right corners of the rectangle
   const vector<unsigned int>
   draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr, int legend_offset);
+  void make_plot(vector<unsigned int> &rectangle_points, int sensor_index);
 };
 
 #endif

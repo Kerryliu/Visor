@@ -120,7 +120,7 @@ Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
   cr->fill();
 
   // Draw inner rectangle:
-  const int inner_offset = 2;
+  const unsigned int inner_offset = 2;
   rectangle_height -= inner_offset;
   rectangle_width -= inner_offset;
   x_coord = (width - rectangle_width) / 2 + left_offset;
@@ -147,12 +147,20 @@ Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
     cr->line_to(x_coord + rectangle_width, y_coord + line_spacing * line_index);
   }
   // Horizontal:
-  line_spacing = rectangle_width / max_line_count;
-  for (unsigned int line_index = 1; line_index < max_line_count; line_index++) {
+  const unsigned int horizontal_line_count = 5;
+  line_spacing = rectangle_width / horizontal_line_count;
+  for (unsigned int line_index = 1; line_index < horizontal_line_count;
+       line_index++) {
     cr->move_to(x_coord + line_spacing * line_index, y_coord);
     cr->line_to(x_coord + line_spacing * line_index,
                 y_coord + rectangle_height - legend_offset);
   }
   cr->stroke();
   return {x_coord, y_coord, rectangle_width, rectangle_height - legend_offset};
+}
+
+void Graph::make_plot(vector<unsigned int> &rectangle_points,
+                      int sensor_index) {
+  unsigned int y_axis_pixels = rectangle_points[3] - rectangle_points[1];
+  unsigned int x_axis_pixels = rectangle_points[2] - rectangle_points[0];
 }

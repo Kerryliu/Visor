@@ -131,8 +131,12 @@ string Device::set_name(string file_path) {
   std::ifstream file;
   string file_name;
   file.open(file_path + '/' + "name");
-  getline(file, file_name);
-  file.close();
+  if (file) {
+    getline(file, file_name);
+    file.close();
+  } else {
+    file_name = "Undefined";
+  }
   return file_name;
 }
 
