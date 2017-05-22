@@ -49,10 +49,10 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
     vector<vector<Device::sensor_reading>> device_readings =
         devices[page].get_sensor_readings();
     for (unsigned int sensor_type = 1; sensor_type < device_readings.size();
-         sensor_type+=2) { //Skip voltage and pwm
+         sensor_type += 2) { // Skip voltage and pwm
       if (!device_readings[sensor_type].empty()) {
         m_Notebook_Graphs[page].push_back(
-            std::make_unique<Graph>(devices[page], sensor_type));
+            std::make_unique<Graph>(device_readings[sensor_type], sensor_type));
       }
     }
     for (auto &graph : m_Notebook_Graphs[page]) {

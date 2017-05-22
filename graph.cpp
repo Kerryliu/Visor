@@ -2,7 +2,8 @@
 #include <gtkmm/drawingarea.h>
 #include <iostream>
 
-Graph::Graph(const Device &device, int type) : type(type), device(device) {}
+Graph::Graph(const vector<Device::sensor_reading> &device_readings, int type)
+    : type(type), device_readings(device_readings) {}
 
 Graph::~Graph() {}
 
@@ -40,7 +41,7 @@ void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
 
 void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   // Draw outer rectangle:
-  const int bottom_offset = -15;
+  const int bottom_offset = -30;
   const int left_offset = 0;
   unsigned int rectangle_height = height - 150;
   unsigned int rectangle_width = width - 100;
@@ -69,9 +70,10 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   // Vertical:
   const unsigned int max_line_count = 5;
   const unsigned int min_line_spacing = 25;
-  unsigned int line_count = (rectangle_height / min_line_spacing > max_line_count)
-                                ? max_line_count
-                                : rectangle_height / min_line_spacing;
+  unsigned int line_count =
+      (rectangle_height / min_line_spacing > max_line_count)
+          ? max_line_count
+          : rectangle_height / min_line_spacing;
   unsigned int line_spacing = rectangle_height / line_count;
   for (unsigned int line_index = 1; line_index < line_count; line_index++) {
     cr->move_to(x_coord, y_coord + line_spacing * line_index);
