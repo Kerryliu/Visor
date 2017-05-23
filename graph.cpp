@@ -69,10 +69,8 @@ void Graph::update_values(vector<Device::sensor_reading> &device_readings) {
 void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
   const int left_offset = 10;
   const int top_offset = 10;
-  const double fifty_shades_of_grey = 0.4;
   cr->move_to(left_offset, top_offset);
-  cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
-                     fifty_shades_of_grey);
+  cr->set_source_rgb(0.4, 0.4, 0.4);
 
   Pango::FontDescription font;
   font.set_weight(Pango::WEIGHT_BOLD);
@@ -114,7 +112,7 @@ int Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
       layout->show_in_cairo_context(cr);
     }
   }
-  int legend_offset = line_spacing * num_lines + bottom_offset*2;
+  int legend_offset = line_spacing * num_lines + bottom_offset * 2;
   return legend_offset;
 }
 
@@ -126,14 +124,14 @@ Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
   unsigned int y_start = 40;
   unsigned int rectangle_width = width - x_start * 2;
   unsigned int rectangle_height = height - y_start - legend_offset;
-  const double fifty_shades_of_grey = 0.9;
+  double fifty_shades_of_grey = 0.7;
   cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
                      fifty_shades_of_grey);
   cr->rectangle(x_start, y_start, rectangle_width, rectangle_height);
   cr->fill();
 
   // Draw inner rectangle:
-  const unsigned int inner_offset = 2;
+  const unsigned int inner_offset = 1;
   x_start += inner_offset;
   rectangle_width -= inner_offset * 2;
   y_start += inner_offset;
@@ -144,8 +142,8 @@ Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
 
   // Draw lines:
   cr->set_line_width(1.5);
-  cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
-                     fifty_shades_of_grey);
+  cr->set_source_rgb(0.9, 0.9,
+                     0.9);
   // Vertical:
   const unsigned int max_line_count = 10;
   const unsigned int min_line_spacing = 40;
