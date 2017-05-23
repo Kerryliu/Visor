@@ -1,16 +1,24 @@
 #include "graph.h"
+#include <glibmm/main.h>
 #include <gtkmm/drawingarea.h>
 #include <iostream>
+#include <list>
 #include <vector>
 
 using std::vector;
 
-Graph::Graph(const vector<Device::sensor_reading> &device_readings, int type)
-    : type(type), device_readings(device_readings) {
+Graph::Graph(const vector<Device::sensor_reading> &device_readings,
+             int device_index, int type)
+    : device_readings(device_readings), device_index(device_index), type(type) {
   gen_colors();
+  sigc::connection conn = Glib::signal_timeout().connect(
+      sigc::mem_fun(*this, &Graph::on_timeout), 1000);
 }
 
 Graph::~Graph() {}
+
+const unsigned int Graph::get_type() const { return type; }
+const unsigned int Graph::get_device_index() const { return device_index; }
 
 // https://developer.gnome.org/gtkmm-tutorial/stable/chapter-drawingarea.html.en
 bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
@@ -19,7 +27,8 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   height = allocation.get_height();
   draw_title(cr);
   int bottom_offset = draw_legend(cr);
-  draw_graph_grid(cr, bottom_offset);
+  vector<unsigned int> rectangle_points = draw_graph_grid(cr, bottom_offset);
+  make_plot(cr, rectangle_points, 0);
   return true;
 }
 
@@ -48,6 +57,10 @@ void Graph::gen_colors() {
     }
     colors.push_back({r, g, b});
   }
+}
+
+void Graph::update_values(vector<Device::sensor_reading> &device_readings) {
+  // this->device_readings = device_readings;
 }
 
 void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
@@ -156,11 +169,64 @@ Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
                 y_coord + rectangle_height - legend_offset);
   }
   cr->stroke();
-  return {x_coord, y_coord, rectangle_width, rectangle_height - legend_offset};
+  return {x_coord, y_coord, rectangle_width + 50,
+          rectangle_height - legend_offset + 100};
 }
 
-void Graph::make_plot(vector<unsigned int> &rectangle_points,
+void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr,
+                      vector<unsigned int> &rectangle_points,
                       int sensor_index) {
+  static std::list<unsigned int> original_y;
+  static std::list<unsigned int> normalized_y;
   unsigned int y_axis_pixels = rectangle_points[3] - rectangle_points[1];
   unsigned int x_axis_pixels = rectangle_points[2] - rectangle_points[0];
+  unsigned int prev_y_axis_pixels = 0;
+  // On resize, need to scale all previous values
+  // if (prev_y_axis_pixels != y_axis_pixels) {
+  //   prev_y_axis_pixels = y_axis_pixels;
+  //   std::list<unsigned int>::iterator orig_y_it;
+  //   std::list<unsigned int>::iterator norm_y_it;
+  //   for (orig_y_it = original_y.begin(), norm_y_it = normalized_y.begin();
+  //        orig_y_it != original_y.end(); orig_y_it++, norm_y_it++) {
+  //     *norm_y_it = rectangle_points[1] +
+  //                  (double)(*orig_y_it) / max_type_values[type] * y_axis_pixels;
+  //   }
+  // }
+
+  // This is messy right now. Please divert eyes
+  if (normalized_y.size() > 60) {
+    original_y.pop_back();
+    normalized_y.pop_back();
+  }
+  unsigned int temp = device_readings[sensor_index].current_value;
+  if (type == TEMPERATURE) {
+    temp /= 1000;
+  }
+  original_y.push_front(temp);
+  normalized_y.push_front(rectangle_points[3] -
+                         (double)temp / max_type_values[type] * y_axis_pixels);
+  unsigned int starting_x_value = rectangle_points[2];
+  double x_axis_pixel_stepping = (double)x_axis_pixels / 60;
+
+  // Attempt to plot
+  cr->set_line_width(1);
+  cr->set_source_rgb(0, 0, 0);
+  cr->move_to(starting_x_value, 100);
+  unsigned int loop_index = 0;
+  for (unsigned int y_value : normalized_y) {
+    cr->line_to(starting_x_value - x_axis_pixel_stepping * loop_index, y_value);
+    loop_index++;
+  }
+  cr->stroke();
+}
+
+bool Graph::on_timeout() {
+  // force our program to redraw the entire clock.
+  auto win = get_window();
+  if (win) {
+    Gdk::Rectangle r(0, 0, get_allocation().get_width(),
+                     get_allocation().get_height());
+    win->invalidate_rect(r, false);
+  }
+  return true;
 }

@@ -27,7 +27,7 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   tree = std::make_unique<Tree>(all_readings, device_names);
 
   // Start a new worker thread.
-  m_Dispatcher.connect(sigc::mem_fun(*this, &Window::update_tree));
+  m_Dispatcher.connect(sigc::mem_fun(*this, &Window::update_all));
 
   set_border_width(1);
   set_default_size(500, 600);
@@ -51,8 +51,8 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
     for (unsigned int sensor_type = 1; sensor_type < device_readings.size();
          sensor_type += 2) { // Skip voltage and pwm
       if (!device_readings[sensor_type].empty()) {
-        m_Notebook_Graphs[page].push_back(
-            std::make_unique<Graph>(device_readings[sensor_type], sensor_type));
+        m_Notebook_Graphs[page].push_back(std::make_unique<Graph>(
+            device_readings[sensor_type], page, sensor_type));
       }
     }
     for (auto &graph : m_Notebook_Graphs[page]) {
@@ -91,9 +91,16 @@ void Window::update_values() {
   }
 }
 
-void Window::update_tree() { tree->update_tree_view(all_readings); }
-
-void Window::update_graph() { std::cout << "hmmm" << std::endl; }
+void Window::update_all() {
+  tree->update_tree_view(all_readings);
+  for (auto &page : m_Notebook_Graphs) {
+    for (auto &graph : page) {
+      unsigned int type = graph->get_type();
+      unsigned int device_index = graph->get_device_index();
+      graph->update_values(all_readings[type][device_index]);
+    }
+  }
+}
 
 void Window::on_button_quit() {
   if (m_WorkerThread) {

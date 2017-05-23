@@ -15,7 +15,6 @@ class Window : public Gtk::Window {
 public:
   Window();
   virtual ~Window();
-  void update_graph();
 
 private:
   Glib::Dispatcher m_Dispatcher;
@@ -29,7 +28,7 @@ private:
   std::unique_ptr<Tree> tree;
 
   void update_values();
-  void update_tree();
+  void update_all();
 
   // Signal handlers:
   void on_button_quit();
