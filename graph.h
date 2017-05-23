@@ -16,14 +16,22 @@ public:
   void update_values(vector<Device::sensor_reading> &device_readings);
   const unsigned int get_type() const;
   const unsigned int get_device_index() const;
+
 protected:
   bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
 
 private:
   int width;
   int height;
+  unsigned int prev_y_axis_pixels = 0;
   bool on_timeout();
   vector<vector<double>> colors;
+
+  unsigned int global_tick = 0;
+  unsigned int mp_local_tick = 0;
+
+  vector<std::list<unsigned int>> original_y;
+  vector<std::list<unsigned int>> normalized_y;
 
   vector<Device::sensor_reading> device_readings;
   const unsigned int device_index;
@@ -38,7 +46,8 @@ private:
   const vector<unsigned int>
   draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr, int legend_offset);
   void make_plot(const Cairo::RefPtr<Cairo::Context> &cr,
-                 vector<unsigned int> &rectangle_points, int sensor_index);
+                 vector<unsigned int> &rectangle_points,
+                 unsigned int sensor_index);
 };
 
 #endif

@@ -1,6 +1,5 @@
 #include "graph.h"
 #include <glibmm/main.h>
-#include <gtkmm/drawingarea.h>
 #include <iostream>
 #include <list>
 #include <vector>
@@ -11,6 +10,8 @@ Graph::Graph(const vector<Device::sensor_reading> &device_readings,
              int device_index, int type)
     : device_readings(device_readings), device_index(device_index), type(type) {
   gen_colors();
+  original_y.resize(device_readings.size());
+  normalized_y.resize(device_readings.size());
   sigc::connection conn = Glib::signal_timeout().connect(
       sigc::mem_fun(*this, &Graph::on_timeout), 1000);
 }
@@ -28,7 +29,9 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   draw_title(cr);
   int bottom_offset = draw_legend(cr);
   vector<unsigned int> rectangle_points = draw_graph_grid(cr, bottom_offset);
-  make_plot(cr, rectangle_points, 0);
+  for (unsigned int i = 0; i < device_readings.size(); i++) {
+    make_plot(cr, rectangle_points, i);
+  }
   return true;
 }
 
@@ -60,7 +63,7 @@ void Graph::gen_colors() {
 }
 
 void Graph::update_values(vector<Device::sensor_reading> &device_readings) {
-  // this->device_readings = device_readings;
+  this->device_readings = device_readings;
 }
 
 void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
@@ -119,28 +122,24 @@ const vector<unsigned int>
 Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
                        int legend_offset) {
   // Draw outer rectangle:
-  const int left_offset = 0;
-  int bottom_offset = 20;
-  unsigned int rectangle_height = height - 50;
-  unsigned int rectangle_width = width - 100;
-  unsigned int x_coord = (width - rectangle_width) / 2 + left_offset;
-  unsigned int y_coord = (height - rectangle_height) / 2 + bottom_offset;
+  unsigned int x_start = 25;
+  unsigned int y_start = 40;
+  unsigned int rectangle_width = width - x_start * 2;
+  unsigned int rectangle_height = height - y_start - legend_offset;
   const double fifty_shades_of_grey = 0.9;
   cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
                      fifty_shades_of_grey);
-  cr->rectangle(x_coord, y_coord, rectangle_width,
-                rectangle_height - legend_offset);
+  cr->rectangle(x_start, y_start, rectangle_width, rectangle_height);
   cr->fill();
 
   // Draw inner rectangle:
   const unsigned int inner_offset = 2;
-  rectangle_height -= inner_offset;
-  rectangle_width -= inner_offset;
-  x_coord = (width - rectangle_width) / 2 + left_offset;
-  y_coord = (height - rectangle_height) / 2 + bottom_offset;
+  x_start += inner_offset;
+  rectangle_width -= inner_offset * 2;
+  y_start += inner_offset;
+  rectangle_height -= inner_offset * 2;
   cr->set_source_rgb(1, 1, 1);
-  cr->rectangle(x_coord, y_coord, rectangle_width,
-                rectangle_height - legend_offset);
+  cr->rectangle(x_start, y_start, rectangle_width, rectangle_height);
   cr->fill();
 
   // Draw lines:
@@ -154,74 +153,83 @@ Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
       ((rectangle_height) / min_line_spacing > max_line_count)
           ? max_line_count
           : rectangle_height / min_line_spacing;
-  unsigned int line_spacing = (rectangle_height - legend_offset) / line_count;
+  unsigned int line_spacing = (rectangle_height) / line_count;
   for (unsigned int line_index = 1; line_index < line_count; line_index++) {
-    cr->move_to(x_coord, y_coord + line_spacing * line_index);
-    cr->line_to(x_coord + rectangle_width, y_coord + line_spacing * line_index);
+    cr->move_to(x_start, y_start + line_spacing * line_index);
+    cr->line_to(x_start + rectangle_width, y_start + line_spacing * line_index);
   }
-  // Horizontal:
+  // // Horizontal:
   const unsigned int horizontal_line_count = 5;
   line_spacing = rectangle_width / horizontal_line_count;
   for (unsigned int line_index = 1; line_index < horizontal_line_count;
        line_index++) {
-    cr->move_to(x_coord + line_spacing * line_index, y_coord);
-    cr->line_to(x_coord + line_spacing * line_index,
-                y_coord + rectangle_height - legend_offset);
+    cr->move_to(x_start + line_spacing * line_index, y_start);
+    cr->line_to(x_start + line_spacing * line_index,
+                y_start + rectangle_height);
   }
   cr->stroke();
-  return {x_coord, y_coord, rectangle_width + 50,
-          rectangle_height - legend_offset + 100};
+  return {x_start, y_start, rectangle_width + x_start,
+          rectangle_height + y_start};
 }
 
 void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr,
                       vector<unsigned int> &rectangle_points,
-                      int sensor_index) {
-  static std::list<unsigned int> original_y;
-  static std::list<unsigned int> normalized_y;
+                      unsigned int sensor_index) {
   unsigned int y_axis_pixels = rectangle_points[3] - rectangle_points[1];
   unsigned int x_axis_pixels = rectangle_points[2] - rectangle_points[0];
-  unsigned int prev_y_axis_pixels = 0;
-  // On resize, need to scale all previous values
-  // if (prev_y_axis_pixels != y_axis_pixels) {
-  //   prev_y_axis_pixels = y_axis_pixels;
-  //   std::list<unsigned int>::iterator orig_y_it;
-  //   std::list<unsigned int>::iterator norm_y_it;
-  //   for (orig_y_it = original_y.begin(), norm_y_it = normalized_y.begin();
-  //        orig_y_it != original_y.end(); orig_y_it++, norm_y_it++) {
-  //     *norm_y_it = rectangle_points[1] +
-  //                  (double)(*orig_y_it) / max_type_values[type] * y_axis_pixels;
-  //   }
-  // }
-
   // This is messy right now. Please divert eyes
-  if (normalized_y.size() > 60) {
-    original_y.pop_back();
-    normalized_y.pop_back();
-  }
-  unsigned int temp = device_readings[sensor_index].current_value;
+  double temp = device_readings[sensor_index].current_value;
   if (type == TEMPERATURE) {
     temp /= 1000;
   }
-  original_y.push_front(temp);
-  normalized_y.push_front(rectangle_points[3] -
-                         (double)temp / max_type_values[type] * y_axis_pixels);
+  if (global_tick > mp_local_tick) {
+    mp_local_tick++;
+    original_y[sensor_index].push_front(temp);
+    normalized_y[sensor_index].push_front(
+        rectangle_points[3] - temp / max_type_values[type] * y_axis_pixels);
+  }
+  if (normalized_y[sensor_index].size() > 60) {
+    original_y[sensor_index].pop_back();
+    normalized_y[sensor_index].pop_back();
+  }
+  // On resize, need to scale all previous values
+  if (prev_y_axis_pixels != y_axis_pixels) {
+    prev_y_axis_pixels = y_axis_pixels;
+    for (unsigned int i = 0; i < device_readings.size(); i++) {
+      std::list<unsigned int>::iterator orig_y_it;
+      std::list<unsigned int>::iterator norm_y_it;
+      for (orig_y_it = original_y[i].begin(),
+          norm_y_it = normalized_y[i].begin();
+           orig_y_it != original_y[i].end(); orig_y_it++, norm_y_it++) {
+        *norm_y_it =
+            rectangle_points[3] -
+            (double)(*orig_y_it) / max_type_values[type] * y_axis_pixels;
+      }
+    }
+  }
   unsigned int starting_x_value = rectangle_points[2];
   double x_axis_pixel_stepping = (double)x_axis_pixels / 60;
 
   // Attempt to plot
-  cr->set_line_width(1);
-  cr->set_source_rgb(0, 0, 0);
-  cr->move_to(starting_x_value, 100);
+  cr->set_line_width(2);
+  cr->set_source_rgb(colors[sensor_index][0], colors[sensor_index][1],
+                     colors[sensor_index][2]);
+  cr->move_to(starting_x_value, normalized_y[sensor_index].front());
   unsigned int loop_index = 0;
-  for (unsigned int y_value : normalized_y) {
+  for (unsigned int y_value : normalized_y[sensor_index]) {
     cr->line_to(starting_x_value - x_axis_pixel_stepping * loop_index, y_value);
     loop_index++;
   }
+  cr->set_line_join(Cairo::LineJoin::LINE_JOIN_ROUND);
   cr->stroke();
 }
 
 bool Graph::on_timeout() {
   // force our program to redraw the entire clock.
+  // Sync needed because of random redraws
+  if (global_tick <= mp_local_tick) {
+    global_tick += device_readings.size();
+  }
   auto win = get_window();
   if (win) {
     Gdk::Rectangle r(0, 0, get_allocation().get_width(),

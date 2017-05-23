@@ -97,7 +97,7 @@ void Window::update_all() {
     for (auto &graph : page) {
       unsigned int type = graph->get_type();
       unsigned int device_index = graph->get_device_index();
-      graph->update_values(all_readings[type][device_index]);
+      graph->update_values(all_readings[device_index][type]);
     }
   }
 }
