@@ -114,7 +114,7 @@ int Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
       layout->show_in_cairo_context(cr);
     }
   }
-  int legend_offset = line_spacing * num_lines + bottom_offset;
+  int legend_offset = line_spacing * num_lines + bottom_offset*2;
   return legend_offset;
 }
 
@@ -143,7 +143,7 @@ Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr,
   cr->fill();
 
   // Draw lines:
-  cr->set_line_width(1);
+  cr->set_line_width(1.5);
   cr->set_source_rgb(fifty_shades_of_grey, fifty_shades_of_grey,
                      fifty_shades_of_grey);
   // Vertical:
@@ -211,13 +211,28 @@ void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr,
   double x_axis_pixel_stepping = (double)x_axis_pixels / 60;
 
   // Attempt to plot
-  cr->set_line_width(2);
+  cr->set_line_width(1);
   cr->set_source_rgb(colors[sensor_index][0], colors[sensor_index][1],
                      colors[sensor_index][2]);
   cr->move_to(starting_x_value, normalized_y[sensor_index].front());
+  unsigned int prev_y = 0;
   unsigned int loop_index = 0;
   for (unsigned int y_value : normalized_y[sensor_index]) {
-    cr->line_to(starting_x_value - x_axis_pixel_stepping * loop_index, y_value);
+    if (!prev_y) {
+      prev_y = y_value;
+      cr->line_to(starting_x_value - x_axis_pixel_stepping * loop_index,
+                  prev_y);
+    } else {
+      // This mathy stuff is from gnome-system-monitor.  Don't ask me how it
+      // works
+      cr->curve_to(
+          starting_x_value - ((loop_index - 0.5) * x_axis_pixel_stepping),
+          prev_y,
+          starting_x_value - ((loop_index - 0.5) * x_axis_pixel_stepping),
+          y_value, starting_x_value - x_axis_pixel_stepping * loop_index,
+          y_value);
+      prev_y = y_value;
+    }
     loop_index++;
   }
   cr->set_line_join(Cairo::LineJoin::LINE_JOIN_ROUND);
