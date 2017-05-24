@@ -49,7 +49,7 @@ void Device::refresh_sensors() {
       // prev_sensor_type_reading.cur_val;
       int prev_min_val = prev_sensor_type_reading.min_val;
       int prev_max_val = prev_sensor_type_reading.max_val;
-      int prev_avg_sensor_val = prev_sensor_type_reading.avg_val;
+      int prev_avg_val = prev_sensor_type_reading.avg_val;
       int prev_tick = prev_sensor_type_reading.tick;
 
       // New values to be:
@@ -73,8 +73,7 @@ void Device::refresh_sensors() {
       cur_max_val = (cur_cur_val > prev_max_val) ? cur_cur_val : prev_max_val;
       cur_tick = prev_tick + 1;
       // Probably a better way of calculating avg.  This will do for now.
-      cur_avg_val =
-          ((prev_avg_sensor_val * prev_tick) + cur_cur_val) / cur_tick;
+      cur_avg_val = ((prev_avg_val * prev_tick) + cur_cur_val) / cur_tick;
 
       // see if sensor value has name:
       file.open(file_path + sensor_types_paths[type] +
