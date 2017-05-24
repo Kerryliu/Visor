@@ -28,9 +28,9 @@ private:
       add(m_pixbuf);
       add(m_col_name);
       add(m_col_cur_val);
-      add(m_col_min_value);
-      add(m_col_max_value);
-      add(m_col_average_value);
+      add(m_col_min_val);
+      add(m_col_max_val);
+      add(m_col_average_val);
     }
 
     // Tree model columns:
@@ -40,9 +40,9 @@ private:
     Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf>> m_pixbuf;
     Gtk::TreeModelColumn<Glib::ustring> m_col_name;
     Gtk::TreeModelColumn<Glib::ustring> m_col_cur_val;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_min_value;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_max_value;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_average_value;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_min_val;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_max_val;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_average_val;
   };
 
   ModelColumns m_Columns;

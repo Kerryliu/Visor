@@ -27,7 +27,7 @@ private:
 
   Glib::Dispatcher m_Dispatcher;
   std::unique_ptr<std::thread> m_WorkerThread =
-      std::make_unique<std::thread>([this] { update_values(); });
+      std::make_unique<std::thread>([this] { update_vals(); });
 
   std::unique_ptr<Tree> tree;
   Gtk::Box m_VBox;
@@ -37,7 +37,7 @@ private:
   Gtk::Notebook m_Notebook;
   Gtk::ScrolledWindow m_ScrolledWindow;
 
-  void update_values();
+  void update_vals();
   void update_all();
   void on_button_quit();
 };

@@ -60,7 +60,7 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
     m_Notebook.append_page(m_Notebook_Boxes[page], devices[page].name);
   }
 
-  // Attempt to make that stack:
+  // Make that stack:
   m_stack.add(m_ScrolledWindow, "summary", "Summary");
   m_stack.add(m_Notebook, "graphs", "Graphs");
   m_stackSwitcher.set_stack(m_stack);
@@ -75,7 +75,7 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
 
 Window::~Window() { on_button_quit(); }
 
-void Window::update_values() {
+void Window::update_vals() {
   while (1) {
     if (stop_work) {
       break;
@@ -96,7 +96,7 @@ void Window::update_all() {
     for (auto &graph : page) {
       unsigned int type = graph->get_type();
       unsigned int device_index = graph->get_device_index();
-      graph->update_values(all_readings[device_index][type]);
+      graph->update_vals(all_readings[device_index][type]);
     }
   }
 }

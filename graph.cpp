@@ -38,7 +38,7 @@ bool Graph::update() {
     int raw_val = sensor_readings[i].cur_val;
     int scaled_val =
         graph_y_start + graph_height -
-        (double)raw_val / Device::sensor_max_values[type] * graph_height;
+        (double)raw_val / Device::sensor_max_vals[type] * graph_height;
     raw_vals[i].push_front(raw_val);
     scaled_vals[i].push_front(scaled_val);
     if (scaled_vals[i].size() > 61) {
@@ -47,7 +47,7 @@ bool Graph::update() {
     }
   }
 
-  // Refresh window;
+  // Refresh window
   auto win = get_window();
   if (win) {
     Gdk::Rectangle r(0, 0, get_allocation().get_width(),
@@ -67,7 +67,7 @@ void Graph::check_resize() {
       for (orig_y_it = raw_vals[i].begin(), norm_y_it = scaled_vals[i].begin();
            orig_y_it != raw_vals[i].end(); orig_y_it++, norm_y_it++) {
         *norm_y_it = graph_y_start + graph_height -
-                     (double)(*orig_y_it) / Device::sensor_max_values[type] *
+                     (double)(*orig_y_it) / Device::sensor_max_vals[type] *
                          graph_height;
       }
     }
@@ -101,7 +101,7 @@ void Graph::gen_colors() {
   }
 }
 
-void Graph::update_values(vector<Device::sensor_reading> &sensor_readings) {
+void Graph::update_vals(vector<Device::sensor_reading> &sensor_readings) {
   this->sensor_readings = sensor_readings;
   update();
 }
@@ -121,7 +121,6 @@ void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
 }
 
 void Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
-  // First run if no colors have been made: (This needs work)
   const unsigned int bottom_offset = 5;
   const unsigned int side_offset = 50;
   const unsigned int line_spacing = 20;
@@ -170,7 +169,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
     cr->line_to(graph_x_start + graph_width + over_shoot,
                 graph_y_start + line_spacing * line_index);
   }
-  // // Horizontal:
+  // Horizontal:
   const unsigned int horizontal_line_count = 5;
   line_spacing = graph_width / horizontal_line_count;
   for (unsigned int line_index = 1; line_index < horizontal_line_count;
@@ -201,36 +200,36 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   Pango::FontDescription font;
   font.set_absolute_size(10000);
   auto layout = create_pango_layout(
-      Device::formatValue(Device::sensor_max_values[type], type));
+      Device::formatValue(Device::sensor_max_vals[type], type));
   layout->set_font_description(font);
   layout->show_in_cairo_context(cr);
 }
 
 void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
   for (unsigned int i = 0; i < sensor_readings.size(); i++) {
-    unsigned int starting_x_value = graph_width + graph_x_start;
+    unsigned int starting_x_val = graph_width + graph_x_start;
     double x_axis_pixel_stepping = (double)graph_width / 60;
 
     // Attempt to plot
     cr->set_line_width(line_width);
     cr->set_source_rgb(colors[i][0], colors[i][1], colors[i][2]);
-    cr->move_to(starting_x_value, scaled_vals[i].front());
+    cr->move_to(starting_x_val, scaled_vals[i].front());
     unsigned int prev_y = 0;
     unsigned int loop_index = 0;
-    for (unsigned int y_value : scaled_vals[i]) {
+    for (unsigned int y_val : scaled_vals[i]) {
       if (!prev_y) {
-        prev_y = y_value;
-        cr->line_to(starting_x_value - x_axis_pixel_stepping * loop_index,
+        prev_y = y_val;
+        cr->line_to(starting_x_val - x_axis_pixel_stepping * loop_index,
                     prev_y);
       } else {
         // This mathy stuff is from gnome-system-monitor. I consider it magic.
         cr->curve_to(
-            starting_x_value - ((loop_index - 0.5) * x_axis_pixel_stepping),
+            starting_x_val - ((loop_index - 0.5) * x_axis_pixel_stepping),
             prev_y,
-            starting_x_value - ((loop_index - 0.5) * x_axis_pixel_stepping),
-            y_value, starting_x_value - x_axis_pixel_stepping * loop_index,
-            y_value);
-        prev_y = y_value;
+            starting_x_val - ((loop_index - 0.5) * x_axis_pixel_stepping),
+            y_val, starting_x_val - x_axis_pixel_stepping * loop_index,
+            y_val);
+        prev_y = y_val;
       }
       loop_index++;
     }

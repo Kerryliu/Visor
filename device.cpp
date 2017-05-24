@@ -14,7 +14,7 @@ const vector<string> Device::sensor_types_paths({"/in", "/fan", "/pwm",
                                                  "/temp"});
 const vector<string> Device::sensor_types_icons(
     {"assets/in.svg", "assets/fan.svg", "assets/pwm.svg", "assets/temp.svg"});
-const vector<unsigned int> Device::sensor_max_values({10, 3000, 10, 100000});
+const vector<unsigned int> Device::sensor_max_vals({10, 3000, 10, 100000});
 const vector<string> Device::sensor_units({" V", " RPM", " V", " \u2103"});
 
 Device::Device(string file_path)
@@ -31,35 +31,33 @@ const vector<vector<Device::sensor_reading>> &Device::get_sensor_readings() {
 }
 
 void Device::refresh_sensors() {
-  vector<vector<Device::sensor_reading>> previous_sensor_readings =
+  vector<vector<Device::sensor_reading>> prev_sensor_readings =
       get_sensor_readings();
   for (unsigned int type = 0; type < sensor_types.size(); type++) {
-    vector<sensor_reading> current_sensor_type_readings(
-        sensor_type_counts[type]);
-    vector<sensor_reading> &previous_sensor_type_readings =
-        previous_sensor_readings[type];
+    vector<sensor_reading> cur_sensor_type_readings(sensor_type_counts[type]);
+    vector<sensor_reading> &prev_sensor_type_readings =
+        prev_sensor_readings[type];
 
     for (unsigned int sensor_number = 0;
          sensor_number < sensor_type_counts[type]; sensor_number++) {
-      string current_sensor_name;
+      string cur_sensor_name;
 
       // Previous values to compare against:
-      sensor_reading previous_sensor_type_reading =
-          previous_sensor_type_readings[sensor_number];
-      // int previous_cur_val =
-      // previous_sensor_type_reading.cur_val;
-      int previous_min_value = previous_sensor_type_reading.min_value;
-      int previous_max_value = previous_sensor_type_reading.max_value;
-      int previous_average_sensor_value =
-          previous_sensor_type_reading.average_value;
-      int previous_refresh_count = previous_sensor_type_reading.refresh_count;
+      sensor_reading prev_sensor_type_reading =
+          prev_sensor_type_readings[sensor_number];
+      // int prev_cur_val =
+      // prev_sensor_type_reading.cur_val;
+      int prev_min_val = prev_sensor_type_reading.min_val;
+      int prev_max_val = prev_sensor_type_reading.max_val;
+      int prev_avg_sensor_val = prev_sensor_type_reading.avg_val;
+      int prev_tick = prev_sensor_type_reading.tick;
 
       // New values to be:
-      int current_cur_val;
-      int current_min_value;
-      int current_max_value;
-      int current_average_value;
-      int current_refresh_count;
+      int cur_cur_val;
+      int cur_min_val;
+      int cur_max_val;
+      int cur_avg_val;
+      int cur_tick;
       std::ifstream file;
       string temp_string;
 
@@ -69,63 +67,57 @@ void Device::refresh_sensors() {
       getline(file, temp_string);
       file.close();
 
-      // Do calculations for min, max, and average
-      current_cur_val = std::stoi(temp_string);
-      current_min_value = (current_cur_val < previous_min_value)
-                              ? current_cur_val
-                              : previous_min_value;
-      current_max_value = (current_cur_val > previous_max_value)
-                              ? current_cur_val
-                              : previous_max_value;
-      current_refresh_count = previous_refresh_count + 1;
-      // Probably a better way of calculating average.  This will do for now.
-      current_average_value =
-          ((previous_average_sensor_value * previous_refresh_count) +
-           current_cur_val) /
-          current_refresh_count;
+      // Do calculations for min, max, and avg
+      cur_cur_val = std::stoi(temp_string);
+      cur_min_val = (cur_cur_val < prev_min_val) ? cur_cur_val : prev_min_val;
+      cur_max_val = (cur_cur_val > prev_max_val) ? cur_cur_val : prev_max_val;
+      cur_tick = prev_tick + 1;
+      // Probably a better way of calculating avg.  This will do for now.
+      cur_avg_val =
+          ((prev_avg_sensor_val * prev_tick) + cur_cur_val) / cur_tick;
 
       // see if sensor value has name:
       file.open(file_path + sensor_types_paths[type] +
                 std::to_string(sensor_number + 1) + "_label");
       if (file) {
-        getline(file, current_sensor_name);
+        getline(file, cur_sensor_name);
         file.close();
       } else {
-        current_sensor_name = "Sensor #" + std::to_string(sensor_number + 1);
+        cur_sensor_name = "Sensor #" + std::to_string(sensor_number + 1);
       }
 
-      // Create new sensor_reading struct for current values
-      sensor_reading current_sensor_reading;
-      current_sensor_reading.name = current_sensor_name;
-      current_sensor_reading.cur_val = current_cur_val;
-      current_sensor_reading.min_value = current_min_value;
-      current_sensor_reading.max_value = current_max_value;
-      current_sensor_reading.refresh_count = current_refresh_count;
-      current_sensor_reading.average_value = current_average_value;
-      current_sensor_type_readings[sensor_number] = current_sensor_reading;
+      // Create new sensor_reading struct for cur vals
+      sensor_reading cur_sensor_reading;
+      cur_sensor_reading.name = cur_sensor_name;
+      cur_sensor_reading.cur_val = cur_cur_val;
+      cur_sensor_reading.min_val = cur_min_val;
+      cur_sensor_reading.max_val = cur_max_val;
+      cur_sensor_reading.tick = cur_tick;
+      cur_sensor_reading.avg_val = cur_avg_val;
+      cur_sensor_type_readings[sensor_number] = cur_sensor_reading;
     }
-    sensor_readings[type] = current_sensor_type_readings;
+    sensor_readings[type] = cur_sensor_type_readings;
   }
 }
 
-string Device::formatValue(int value, int sensor_type) {
+string Device::formatValue(int val, int sensor_type) {
   std::ostringstream temp;
-  string value_string;
+  string val_string;
   switch (sensor_type) {
   case VOLTAGE:
-    temp << std::setprecision(2) << std::fixed << ((double)value / 1000);
-    value_string = temp.str();
+    temp << std::setprecision(2) << std::fixed << ((double)val / 1000);
+    val_string = temp.str();
     break;
   case TEMPERATURE:
-    temp << std::setprecision(1) << std::fixed << ((double)value / 1000);
-    value_string = temp.str();
+    temp << std::setprecision(1) << std::fixed << ((double)val / 1000);
+    val_string = temp.str();
     break;
   default:
-    value_string = std::to_string(value);
+    val_string = std::to_string(val);
     break;
   }
-    value_string += sensor_units[sensor_type];
-    return value_string;
+  val_string += sensor_units[sensor_type];
+  return val_string;
 }
 
 string Device::set_name(string file_path) {

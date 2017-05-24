@@ -1,4 +1,3 @@
-// device.h
 #ifndef DEVICE_H
 #define DEVICE_H
 
@@ -21,10 +20,10 @@ public:
   struct sensor_reading {
     string name;
     int cur_val = 0;
-    int min_value = INT_MAX;
-    int max_value = INT_MIN;
-    int refresh_count = 0;
-    int average_value = 0;
+    int min_val = INT_MAX;
+    int max_val = INT_MIN;
+    int tick = 0;
+    int avg_val = 0;
   };
 
   const string file_path;
@@ -33,7 +32,7 @@ public:
   static const vector<string> sensor_types;
   static const vector<string> sensor_types_paths;
   static const vector<string> sensor_types_icons;
-  static const vector<unsigned int> sensor_max_values;
+  static const vector<unsigned int> sensor_max_vals;
   static const vector<string> sensor_units;
 
   const vector<unsigned int> sensor_type_counts =
@@ -42,7 +41,7 @@ public:
   Device(string file_path);
 
   void refresh_sensors();
-  static string formatValue(int value, int sensor_type);
+  static string formatValue(int val, int sensor_type);
   const vector<vector<sensor_reading>> &get_sensor_readings();
 
 private:

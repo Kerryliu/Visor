@@ -12,7 +12,7 @@ class Graph : public Gtk::DrawingArea {
 public:
   Graph(const vector<Device::sensor_reading> &sensor_readings, int device_index,
         int type);
-  void update_values(vector<Device::sensor_reading> &sensor_readings);
+  void update_vals(vector<Device::sensor_reading> &sensor_readings);
   const unsigned int get_type() const;
   const unsigned int get_device_index() const;
 

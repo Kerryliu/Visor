@@ -46,12 +46,12 @@ void Tree::make_tree_view() {
               Gdk::Pixbuf::create_from_file("assets/sensor.svg", 20, 20, true);
           readings_row[m_Columns.m_col_cur_val] = Device::formatValue(
               device_readings[sensor_type][j].cur_val, sensor_type);
-          readings_row[m_Columns.m_col_min_value] = Device::formatValue(
-              device_readings[sensor_type][j].min_value, sensor_type);
-          readings_row[m_Columns.m_col_max_value] = Device::formatValue(
-              device_readings[sensor_type][j].max_value, sensor_type);
-          readings_row[m_Columns.m_col_average_value] = Device::formatValue(
-              device_readings[sensor_type][j].average_value, sensor_type);
+          readings_row[m_Columns.m_col_min_val] = Device::formatValue(
+              device_readings[sensor_type][j].min_val, sensor_type);
+          readings_row[m_Columns.m_col_max_val] = Device::formatValue(
+              device_readings[sensor_type][j].max_val, sensor_type);
+          readings_row[m_Columns.m_col_average_val] = Device::formatValue(
+              device_readings[sensor_type][j].average_val, sensor_type);
         }
       }
     }
@@ -62,9 +62,9 @@ void Tree::make_tree_view() {
   m_Columns.sensor_column->pack_end(m_Columns.m_col_name, true);
   m_TreeView.append_column(*m_Columns.sensor_column);
   m_TreeView.append_column("Current", m_Columns.m_col_cur_val);
-  m_TreeView.append_column("Min", m_Columns.m_col_min_value);
-  m_TreeView.append_column("Max", m_Columns.m_col_max_value);
-  m_TreeView.append_column("Average", m_Columns.m_col_average_value);
+  m_TreeView.append_column("Min", m_Columns.m_col_min_val);
+  m_TreeView.append_column("Max", m_Columns.m_col_max_val);
+  m_TreeView.append_column("Average", m_Columns.m_col_average_val);
 
   m_TreeView.expand_all();
   m_TreeView.set_enable_tree_lines(true);
@@ -99,15 +99,15 @@ void Tree::update_tree_view(
         for (unsigned int sensor_val = 0;
              sensor_val < device_readings[sensor_type].size();
              sensor_val++, iter_sensors++) {
-          Gtk::TreeModel::Row values = *iter_sensors;
-          values[m_Columns.m_col_cur_val] = Device::formatValue(
+          Gtk::TreeModel::Row vals = *iter_sensors;
+          vals[m_Columns.m_col_cur_val] = Device::formatValue(
               device_readings[sensor_type][sensor_val].cur_val, sensor_type);
-          values[m_Columns.m_col_min_value] = Device::formatValue(
-              device_readings[sensor_type][sensor_val].min_value, sensor_type);
-          values[m_Columns.m_col_max_value] = Device::formatValue(
-              device_readings[sensor_type][sensor_val].max_value, sensor_type);
-          values[m_Columns.m_col_average_value] = Device::formatValue(
-              device_readings[sensor_type][sensor_val].average_value,
+          vals[m_Columns.m_col_min_val] = Device::formatValue(
+              device_readings[sensor_type][sensor_val].min_val, sensor_type);
+          vals[m_Columns.m_col_max_val] = Device::formatValue(
+              device_readings[sensor_type][sensor_val].max_val, sensor_type);
+          vals[m_Columns.m_col_average_val] = Device::formatValue(
+              device_readings[sensor_type][sensor_val].average_val,
               sensor_type);
         }
         iter_sensor_type++;
