@@ -12,8 +12,6 @@ Graph::Graph(const vector<Device::sensor_reading> &device_readings,
   gen_colors();
   original_y.resize(device_readings.size());
   normalized_y.resize(device_readings.size());
-  // sigc::connection conn = Glib::signal_timeout().connect(
-  //     sigc::mem_fun(*this, &Graph::update), 1000);
 }
 
 Graph::~Graph() {}
@@ -43,13 +41,10 @@ bool Graph::update() {
   for (unsigned int sensor_index = 0; sensor_index < device_readings.size();
        sensor_index++) {
     double temp = device_readings[sensor_index].current_value;
-    if (type == TEMPERATURE) {
-      temp /= 1000;
-    }
     original_y[sensor_index].push_front(temp);
-    normalized_y[sensor_index].push_front(y_start + rectangle_height -
-                                          temp / max_type_values[type] *
-                                              rectangle_height);
+    normalized_y[sensor_index].push_front(
+        y_start + rectangle_height -
+        temp / Device::sensor_max_values[type] * rectangle_height);
     if (normalized_y[sensor_index].size() > 61) {
       original_y[sensor_index].pop_back();
       normalized_y[sensor_index].pop_back();
@@ -76,9 +71,9 @@ void Graph::check_resize() {
       for (orig_y_it = original_y[i].begin(),
           norm_y_it = normalized_y[i].begin();
            orig_y_it != original_y[i].end(); orig_y_it++, norm_y_it++) {
-        *norm_y_it =
-            y_start + rectangle_height -
-            (double)(*orig_y_it) / max_type_values[type] * rectangle_height;
+        *norm_y_it = y_start + rectangle_height -
+                     (double)(*orig_y_it) / Device::sensor_max_values[type] *
+                         rectangle_height;
       }
     }
   }
@@ -210,8 +205,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   cr->set_source_rgb(0.4, 0.4, 0.4);
   Pango::FontDescription font;
   font.set_absolute_size(10000);
-  auto layout = create_pango_layout(std::to_string(max_type_values[type]) +
-                                    type_units[type]);
+  auto layout = create_pango_layout(
+      Device::formatValue(Device::sensor_max_values[type], type));
   layout->set_font_description(font);
   layout->show_in_cairo_context(cr);
 }

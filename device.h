@@ -33,6 +33,8 @@ public:
   static const vector<string> sensor_types;
   static const vector<string> sensor_types_paths;
   static const vector<string> sensor_types_icons;
+  static const vector<unsigned int> sensor_max_values;
+  static const vector<string> sensor_units;
 
   const vector<unsigned int> sensor_type_counts =
       vector<unsigned int>(sensor_types.size());

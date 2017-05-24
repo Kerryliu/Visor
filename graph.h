@@ -40,8 +40,6 @@ private:
   vector<Device::sensor_reading> device_readings;
   const unsigned int device_index;
   const unsigned int type;
-  const vector<unsigned int> max_type_values = {10, 3000, 10, 100};
-  const vector<string> type_units = {" V", " RPM", " V", " \u2103"};
 
   bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
   bool update();

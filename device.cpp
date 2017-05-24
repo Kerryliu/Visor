@@ -14,6 +14,8 @@ const vector<string> Device::sensor_types_paths({"/in", "/fan", "/pwm",
                                                  "/temp"});
 const vector<string> Device::sensor_types_icons(
     {"assets/in.svg", "assets/fan.svg", "assets/pwm.svg", "assets/temp.svg"});
+const vector<unsigned int> Device::sensor_max_values({10, 3000, 10, 100000});
+const vector<string> Device::sensor_units({" V", " RPM", " V", " \u2103"});
 
 Device::Device(string file_path)
     : file_path(file_path), name(set_name(file_path)),
@@ -113,18 +115,17 @@ string Device::formatValue(int value, int sensor_type) {
   case VOLTAGE:
     temp << std::setprecision(2) << std::fixed << ((double)value / 1000);
     value_string = temp.str();
-    value_string += " V";
-    return value_string;
+    break;
   case TEMPERATURE:
     temp << std::setprecision(1) << std::fixed << ((double)value / 1000);
     value_string = temp.str();
-    value_string += " \u2103";
-    return value_string;
+    break;
   default:
     value_string = std::to_string(value);
-    value_string += " RPM";
-    return value_string;
+    break;
   }
+    value_string += sensor_units[sensor_type];
+    return value_string;
 }
 
 string Device::set_name(string file_path) {
