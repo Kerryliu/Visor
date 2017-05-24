@@ -36,7 +36,7 @@ void Device::refresh_sensors() {
   for (unsigned int type = 0; type < sensor_types.size(); type++) {
     vector<sensor_reading> current_sensor_type_readings(
         sensor_type_counts[type]);
-    vector<sensor_reading> previous_sensor_type_readings =
+    vector<sensor_reading> &previous_sensor_type_readings =
         previous_sensor_readings[type];
 
     for (unsigned int sensor_number = 0;
@@ -46,8 +46,8 @@ void Device::refresh_sensors() {
       // Previous values to compare against:
       sensor_reading previous_sensor_type_reading =
           previous_sensor_type_readings[sensor_number];
-      // int previous_current_value =
-      // previous_sensor_type_reading.current_value;
+      // int previous_cur_val =
+      // previous_sensor_type_reading.cur_val;
       int previous_min_value = previous_sensor_type_reading.min_value;
       int previous_max_value = previous_sensor_type_reading.max_value;
       int previous_average_sensor_value =
@@ -55,7 +55,7 @@ void Device::refresh_sensors() {
       int previous_refresh_count = previous_sensor_type_reading.refresh_count;
 
       // New values to be:
-      int current_current_value;
+      int current_cur_val;
       int current_min_value;
       int current_max_value;
       int current_average_value;
@@ -70,18 +70,18 @@ void Device::refresh_sensors() {
       file.close();
 
       // Do calculations for min, max, and average
-      current_current_value = std::stoi(temp_string);
-      current_min_value = (current_current_value < previous_min_value)
-                              ? current_current_value
+      current_cur_val = std::stoi(temp_string);
+      current_min_value = (current_cur_val < previous_min_value)
+                              ? current_cur_val
                               : previous_min_value;
-      current_max_value = (current_current_value > previous_max_value)
-                              ? current_current_value
+      current_max_value = (current_cur_val > previous_max_value)
+                              ? current_cur_val
                               : previous_max_value;
       current_refresh_count = previous_refresh_count + 1;
       // Probably a better way of calculating average.  This will do for now.
       current_average_value =
           ((previous_average_sensor_value * previous_refresh_count) +
-           current_current_value) /
+           current_cur_val) /
           current_refresh_count;
 
       // see if sensor value has name:
@@ -97,7 +97,7 @@ void Device::refresh_sensors() {
       // Create new sensor_reading struct for current values
       sensor_reading current_sensor_reading;
       current_sensor_reading.name = current_sensor_name;
-      current_sensor_reading.current_value = current_current_value;
+      current_sensor_reading.cur_val = current_cur_val;
       current_sensor_reading.min_value = current_min_value;
       current_sensor_reading.max_value = current_max_value;
       current_sensor_reading.refresh_count = current_refresh_count;

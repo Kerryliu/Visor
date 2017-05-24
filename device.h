@@ -20,7 +20,7 @@ class Device {
 public:
   struct sensor_reading {
     string name;
-    int current_value = 0;
+    int cur_val = 0;
     int min_value = INT_MAX;
     int max_value = INT_MIN;
     int refresh_count = 0;

@@ -37,11 +37,10 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   add(m_VBox);
 
   // Add the TreeView, inside a ScrolledWindow:
-  m_ScrolledWindow_summary.add(tree->m_TreeView);
+  m_ScrolledWindow.add(tree->m_TreeView);
 
   // Only show the scrollbars when they are necessary:
-  m_ScrolledWindow_summary.set_policy(Gtk::POLICY_AUTOMATIC,
-                                      Gtk::POLICY_AUTOMATIC);
+  m_ScrolledWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
   // Setup that notebook
   m_Notebook_Graphs.resize(devices.size());
   for (unsigned int page = 0; page < devices.size(); page++) {
@@ -62,7 +61,7 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   }
 
   // Attempt to make that stack:
-  m_stack.add(m_ScrolledWindow_summary, "summary", "Summary");
+  m_stack.add(m_ScrolledWindow, "summary", "Summary");
   m_stack.add(m_Notebook, "graphs", "Graphs");
   m_stackSwitcher.set_stack(m_stack);
   m_VBox.pack_start(m_stack);

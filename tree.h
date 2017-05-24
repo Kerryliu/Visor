@@ -27,7 +27,7 @@ private:
     ModelColumns() {
       add(m_pixbuf);
       add(m_col_name);
-      add(m_col_current_value);
+      add(m_col_cur_val);
       add(m_col_min_value);
       add(m_col_max_value);
       add(m_col_average_value);
@@ -39,7 +39,7 @@ private:
             Gtk::TreeView::Column("Sensor"));
     Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf>> m_pixbuf;
     Gtk::TreeModelColumn<Glib::ustring> m_col_name;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_current_value;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_cur_val;
     Gtk::TreeModelColumn<Glib::ustring> m_col_min_value;
     Gtk::TreeModelColumn<Glib::ustring> m_col_max_value;
     Gtk::TreeModelColumn<Glib::ustring> m_col_average_value;
