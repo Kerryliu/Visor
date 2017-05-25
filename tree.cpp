@@ -50,8 +50,8 @@ void Tree::make_tree_view() {
               device_readings[sensor_type][j].min_val, sensor_type);
           readings_row[m_Columns.m_col_max_val] = Device::formatValue(
               device_readings[sensor_type][j].max_val, sensor_type);
-          readings_row[m_Columns.m_col_average_val] = Device::formatValue(
-              device_readings[sensor_type][j].average_val, sensor_type);
+          readings_row[m_Columns.m_col_avg_val] = Device::formatValue(
+              device_readings[sensor_type][j].avg_val, sensor_type);
         }
       }
     }
@@ -64,7 +64,7 @@ void Tree::make_tree_view() {
   m_TreeView.append_column("Current", m_Columns.m_col_cur_val);
   m_TreeView.append_column("Min", m_Columns.m_col_min_val);
   m_TreeView.append_column("Max", m_Columns.m_col_max_val);
-  m_TreeView.append_column("Average", m_Columns.m_col_average_val);
+  m_TreeView.append_column("Average", m_Columns.m_col_avg_val);
 
   m_TreeView.expand_all();
   m_TreeView.set_enable_tree_lines(true);
@@ -106,8 +106,8 @@ void Tree::update_tree_view(
               device_readings[sensor_type][sensor_val].min_val, sensor_type);
           vals[m_Columns.m_col_max_val] = Device::formatValue(
               device_readings[sensor_type][sensor_val].max_val, sensor_type);
-          vals[m_Columns.m_col_average_val] = Device::formatValue(
-              device_readings[sensor_type][sensor_val].average_val,
+          vals[m_Columns.m_col_avg_val] = Device::formatValue(
+              device_readings[sensor_type][sensor_val].avg_val,
               sensor_type);
         }
         iter_sensor_type++;

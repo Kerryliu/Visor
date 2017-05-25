@@ -30,7 +30,7 @@ private:
       add(m_col_cur_val);
       add(m_col_min_val);
       add(m_col_max_val);
-      add(m_col_average_val);
+      add(m_col_avg_val);
     }
 
     // Tree model columns:
@@ -42,7 +42,7 @@ private:
     Gtk::TreeModelColumn<Glib::ustring> m_col_cur_val;
     Gtk::TreeModelColumn<Glib::ustring> m_col_min_val;
     Gtk::TreeModelColumn<Glib::ustring> m_col_max_val;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_average_val;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_avg_val;
   };
 
   ModelColumns m_Columns;
