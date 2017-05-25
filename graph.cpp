@@ -25,7 +25,7 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   draw_title(cr);
   draw_legend(cr);
   graph_width = width - graph_x_start - right_padding;
-  graph_height = height - graph_y_start - legend_offset;
+  graph_height = height - graph_y_start - scale_offset - legend_offset;
   check_resize();
   draw_graph_grid(cr);
   make_plot(cr);
@@ -66,9 +66,9 @@ void Graph::check_resize() {
       std::list<unsigned int>::iterator norm_y_it;
       for (orig_y_it = raw_vals[i].begin(), norm_y_it = scaled_vals[i].begin();
            orig_y_it != raw_vals[i].end(); orig_y_it++, norm_y_it++) {
-        *norm_y_it = graph_y_start + graph_height -
-                     (double)(*orig_y_it) / Device::sensor_max_vals[type] *
-                         graph_height;
+        *norm_y_it =
+            graph_y_start + graph_height -
+            (double)(*orig_y_it) / Device::sensor_max_vals[type] * graph_height;
       }
     }
   }
@@ -132,14 +132,14 @@ void Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
   num_lines =
       (sensor_readings.size() + devices_per_line - 1) / devices_per_line;
   // Attempt to draw the damn thing:
-  for (unsigned int line_index = 0; line_index < num_lines; line_index++) {
+  for (unsigned int i = 0; i < num_lines; i++) {
     unsigned int y_coord =
-        height - bottom_offset - (line_spacing * (num_lines - line_index));
+        height - bottom_offset - (line_spacing * (num_lines - i));
     Pango::FontDescription font;
     for (unsigned int spacing_index = 0; spacing_index < devices_per_line;
          spacing_index++) {
       unsigned int x_coord = side_offset + spacing * spacing_index;
-      unsigned int device_index = spacing_index + devices_per_line * line_index;
+      unsigned int device_index = spacing_index + devices_per_line * i;
       if (device_index >= sensor_readings.size()) {
         break;
       }
@@ -156,53 +156,72 @@ void Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
 }
 
 void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
+  // See https://www.cairographics.org/FAQ/#sharp_lines for the 0.5's here
   cr->set_line_width(line_width);
-  // Vertical:
-  cr->set_source_rgb(0.9, 0.9, 0.9);
-  const unsigned int line_count =
-      ((graph_height) / min_line_spacing > max_line_count)
-          ? max_line_count
-          : graph_height / min_line_spacing;
-  unsigned int line_spacing = (graph_height) / line_count;
-  for (unsigned int line_index = 1; line_index < line_count; line_index++) {
-    cr->move_to(graph_x_start, graph_y_start + line_spacing * line_index);
-    cr->line_to(graph_x_start + graph_width + over_shoot,
-                graph_y_start + line_spacing * line_index);
+
+  // Vertical scale lines:
+  const unsigned int hor_min_line_spacing = 40;
+  cr->set_source_rgb(0.8, 0.8, 0.8);
+  unsigned int vert_line_count = graph_height / hor_min_line_spacing;
+  if (vert_line_count > 5) {
+    vert_line_count = 5;
+  } else if (vert_line_count == 3) {
+    vert_line_count = 2;
   }
-  // Horizontal:
-  const unsigned int horizontal_line_count = 5;
-  line_spacing = graph_width / horizontal_line_count;
-  for (unsigned int line_index = 1; line_index < horizontal_line_count;
-       line_index++) {
-    cr->move_to(graph_x_start + line_spacing * line_index, graph_y_start);
-    cr->line_to(graph_x_start + line_spacing * line_index,
+  const unsigned int vert_line_spacing = (graph_height) / vert_line_count;
+  for (unsigned int i = 1; i < vert_line_count; i++) {
+    cr->move_to(graph_x_start, 0.5 + graph_y_start + vert_line_spacing * i);
+    cr->line_to(graph_x_start + graph_width + over_shoot,
+                0.5 + graph_y_start + vert_line_spacing * i);
+  }
+  // Horizontal scale lines:
+  const unsigned int hor_line_count = 6;
+  const unsigned int hor_line_spacing = graph_width / hor_line_count;
+  for (unsigned int i = 1; i < hor_line_count; i++) {
+    cr->move_to(0.5 + graph_x_start + hor_line_spacing * i, graph_y_start);
+    cr->line_to(0.5 + graph_x_start + hor_line_spacing * i,
                 graph_y_start + graph_height + over_shoot);
   }
   cr->stroke();
 
-  // Draw outer rectangle:
-  cr->set_source_rgb(0.5, 0.5, 0.5);
-  cr->move_to(graph_x_start, graph_y_start);
-  cr->line_to(graph_x_start + graph_width + over_shoot, graph_y_start);
-  cr->move_to(graph_x_start, graph_y_start);
-  cr->line_to(graph_x_start, graph_y_start + graph_height + over_shoot);
-  cr->move_to(graph_x_start + graph_width, graph_y_start);
-  cr->line_to(graph_x_start + graph_width,
+  // Draw outer box:
+  cr->set_source_rgb(0.6, 0.6, 0.6);
+  cr->move_to(graph_x_start, 0.5 + graph_y_start);
+  cr->line_to(graph_x_start + graph_width + over_shoot, 0.5 + graph_y_start);
+  cr->move_to(0.5 + graph_x_start, graph_y_start);
+  cr->line_to(0.5 + graph_x_start, graph_y_start + graph_height + over_shoot);
+  cr->move_to(0.5 + graph_x_start + graph_width, graph_y_start);
+  cr->line_to(0.5 + graph_x_start + graph_width,
               graph_y_start + graph_height + over_shoot);
-  cr->move_to(graph_x_start, graph_y_start + graph_height + line_width);
+  cr->move_to(graph_x_start, 0.5 + graph_y_start + graph_height + line_width);
   cr->line_to(graph_x_start + graph_width + over_shoot,
-              graph_y_start + graph_height + line_width);
+              0.5 + graph_y_start + graph_height + line_width);
   cr->stroke();
 
-  // Draw scale on right:
-  cr->move_to(graph_width + graph_x_start + 5, graph_y_start);
-  cr->set_source_rgb(0.4, 0.4, 0.4);
+  // Make that scale:
+  cr->set_source_rgb(0.5, 0.5, 0.5);
   Pango::FontDescription font;
-  font.set_absolute_size(10000);
-  auto layout = create_pango_layout(
-      Device::formatValue(Device::sensor_max_vals[type], type));
-  layout->set_font_description(font);
-  layout->show_in_cairo_context(cr);
+  font.set_absolute_size(10000); // Not sure why this is so big
+  // Vertical scale; // Not sure why this is so big
+  unsigned int vert_stepping = Device::sensor_max_vals[type] / vert_line_count;
+  for (unsigned int i = 0; i <= vert_line_count; i++) {
+    cr->move_to(graph_width + graph_x_start + over_shoot,
+                graph_y_start + vert_line_spacing * i);
+    auto layout = create_pango_layout(
+        Device::formatValue(vert_stepping * (vert_line_count - i), type));
+    layout->set_font_description(font);
+    layout->show_in_cairo_context(cr);
+  }
+  // Horizontal scale:
+  unsigned int hor_stepping = 60 / hor_line_count;
+  for (unsigned int i = 0; i <= hor_line_count; i++) {
+    cr->move_to(graph_x_start + hor_line_spacing * i,
+                graph_y_start + graph_height + over_shoot);
+    auto layout = create_pango_layout(
+        std::to_string(hor_stepping * (hor_line_count - i)));
+    layout->set_font_description(font);
+    layout->show_in_cairo_context(cr);
+  }
 }
 
 void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
@@ -227,8 +246,7 @@ void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
             starting_x_val - ((loop_index - 0.5) * x_axis_pixel_stepping),
             prev_y,
             starting_x_val - ((loop_index - 0.5) * x_axis_pixel_stepping),
-            y_val, starting_x_val - x_axis_pixel_stepping * loop_index,
-            y_val);
+            y_val, starting_x_val - x_axis_pixel_stepping * loop_index, y_val);
         prev_y = y_val;
       }
       loop_index++;

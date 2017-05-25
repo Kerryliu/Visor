@@ -22,17 +22,17 @@ private:
 
   unsigned int width;
   unsigned int height;
+
   const unsigned int line_width = 1;
   const unsigned int graph_x_start = 25;
   const unsigned int graph_y_start = 40;
+  const unsigned int right_padding = 55;
+  const unsigned int scale_offset = 15;
 
-  unsigned int right_padding = 55;
   unsigned int legend_offset;
   unsigned int graph_width = width - graph_x_start - right_padding;
   unsigned int graph_height = height - graph_y_start - legend_offset;
 
-  const unsigned int max_line_count = 10;
-  const unsigned int min_line_spacing = 40;
   const unsigned int over_shoot = 5;
   unsigned int prev_height = 0;
 
