@@ -45,8 +45,8 @@ void Device::refresh_sensors() {
       // Previous values to compare against:
       sensor_reading prev_sensor_type_reading =
           prev_sensor_type_readings[sensor_number];
-      // int prev_cur_val =
-      // prev_sensor_type_reading.cur_val;
+      int prev_cur_val =
+      prev_sensor_type_reading.cur_val;
       int prev_min_val = prev_sensor_type_reading.min_val;
       int prev_max_val = prev_sensor_type_reading.max_val;
       int prev_avg_val = prev_sensor_type_reading.avg_val;
@@ -67,8 +67,13 @@ void Device::refresh_sensors() {
       getline(file, temp_string);
       file.close();
 
+      // Sleep sometimes breaks stoi for some reason
+      try {
+        cur_cur_val = std::stoi(temp_string);
+      } catch (...){
+        cur_cur_val = prev_cur_val;
+      }
       // Do calculations for min, max, and avg
-      cur_cur_val = std::stoi(temp_string);
       cur_min_val = (cur_cur_val < prev_min_val) ? cur_cur_val : prev_min_val;
       cur_max_val = (cur_cur_val > prev_max_val) ? cur_cur_val : prev_max_val;
       cur_tick = prev_tick + 1;
