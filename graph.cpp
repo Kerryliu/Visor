@@ -160,15 +160,19 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   cr->set_line_width(line_width);
 
   // Vertical scale lines:
-  const unsigned int hor_min_line_spacing = 40;
+  const unsigned int hor_min_line_spacing = 30;
   cr->set_source_rgb(0.8, 0.8, 0.8);
   unsigned int vert_line_count = graph_height / hor_min_line_spacing;
-  if (vert_line_count > 5) {
+  if (vert_line_count >= 20) {
+    vert_line_count = 20;
+  } else if (vert_line_count >= 10) {
+    vert_line_count = 10;
+  } else if (vert_line_count >= 5) {
     vert_line_count = 5;
   } else if (vert_line_count == 3) {
     vert_line_count = 2;
   }
-  const unsigned int vert_line_spacing = (graph_height) / vert_line_count;
+  const double vert_line_spacing = (double)graph_height / vert_line_count;
   for (unsigned int i = 1; i < vert_line_count; i++) {
     cr->move_to(graph_x_start, 0.5 + graph_y_start + vert_line_spacing * i);
     cr->line_to(graph_x_start + graph_width + over_shoot,
@@ -176,7 +180,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   }
   // Horizontal scale lines:
   const unsigned int hor_line_count = 6;
-  const unsigned int hor_line_spacing = graph_width / hor_line_count;
+  const double hor_line_spacing = (double)graph_width / hor_line_count;
   for (unsigned int i = 1; i < hor_line_count; i++) {
     cr->move_to(0.5 + graph_x_start + hor_line_spacing * i, graph_y_start);
     cr->line_to(0.5 + graph_x_start + hor_line_spacing * i,
@@ -227,7 +231,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
 void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
   for (unsigned int i = 0; i < sensor_readings.size(); i++) {
     unsigned int starting_x_val = graph_width + graph_x_start;
-    double x_axis_pixel_stepping = (double)graph_width / 60;
+    double delta_x = (double)graph_width / 60;
 
     // Attempt to plot
     cr->set_line_width(line_width);
@@ -238,15 +242,12 @@ void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
     for (unsigned int y_val : scaled_vals[i]) {
       if (!prev_y) {
         prev_y = y_val;
-        cr->line_to(starting_x_val - x_axis_pixel_stepping * loop_index,
-                    prev_y);
+        cr->line_to(starting_x_val - delta_x * loop_index, prev_y);
       } else {
         // This mathy stuff is from gnome-system-monitor. I consider it magic.
-        cr->curve_to(
-            starting_x_val - ((loop_index - 0.5) * x_axis_pixel_stepping),
-            prev_y,
-            starting_x_val - ((loop_index - 0.5) * x_axis_pixel_stepping),
-            y_val, starting_x_val - x_axis_pixel_stepping * loop_index, y_val);
+        cr->curve_to(starting_x_val - (delta_x * (loop_index - 0.5)), prev_y,
+                     starting_x_val - (delta_x * (loop_index - 0.5)), y_val,
+                     starting_x_val - delta_x * loop_index, y_val);
         prev_y = y_val;
       }
       loop_index++;
