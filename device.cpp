@@ -87,7 +87,7 @@ void Device::refresh_sensors() {
         getline(file, cur_sensor_name);
         file.close();
       } else {
-        cur_sensor_name = "Sensor #" + std::to_string(sensor_number + 1);
+        cur_sensor_name = "Sensor " + std::to_string(sensor_number + 1);
       }
 
       // Create new sensor_reading struct for cur vals
