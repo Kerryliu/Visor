@@ -9,7 +9,7 @@ using std::string;
 using std::vector;
 
 Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
-               unsigned int device_index, unsigned int type, unsigned int width)
+               unsigned int device_index, unsigned int type)
     : device_index(device_index), type(type) {
   m_legend.set_max_children_per_line(30);
   m_legend.set_selection_mode(Gtk::SelectionMode::SELECTION_NONE);

@@ -14,7 +14,7 @@ class Legend {
 public:
   Gtk::FlowBox m_legend;
   Legend(const vector<Device::sensor_reading> &sensor_readings,
-         unsigned int device_index, unsigned int type, unsigned int width);
+         unsigned int device_index, unsigned int type);
   const unsigned int get_type() const;
   const unsigned int get_device_index() const;
 
