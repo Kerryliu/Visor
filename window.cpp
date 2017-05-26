@@ -56,11 +56,9 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
       }
     }
     for (unsigned int i = 0; i < m_notebook_graphs[page].size(); i++) {
-      if (m_notebook_graphs[page][i] != NULL) {
-        m_Notebook_Boxes[page].pack_start(*m_notebook_graphs[page][i]);
-        m_Notebook_Boxes[page].pack_start(m_notebook_legends[page][i]->m_legend,
-                                          false, false);
-      }
+      m_Notebook_Boxes[page].pack_start(*m_notebook_graphs[page][i]);
+      m_Notebook_Boxes[page].pack_start(m_notebook_legends[page][i]->m_legend,
+                                        false, false);
     }
     m_Notebook.append_page(m_Notebook_Boxes[page], devices[page].name);
   }
