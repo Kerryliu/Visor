@@ -3,6 +3,7 @@
 
 #include "graph.h"
 #include "tree.h"
+#include "legend.h"
 #include <gtkmm.h>
 #include <memory>
 #include <thread>
@@ -23,7 +24,8 @@ private:
   const std::string file_path = "/sys/class/hwmon/";
   bool stop_work = false;
   vector<Gtk::Box> m_Notebook_Boxes;
-  vector<vector<std::unique_ptr<Graph>>> m_Notebook_Graphs;
+  vector<vector<std::unique_ptr<Graph>>> m_notebook_graphs;
+  vector<vector<std::unique_ptr<Legend>>> m_notebook_legends;
 
   Glib::Dispatcher m_Dispatcher;
   std::unique_ptr<std::thread> m_WorkerThread =

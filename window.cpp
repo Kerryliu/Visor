@@ -1,5 +1,6 @@
 #include "device.h"
 #include "graph.h"
+#include "legend.h"
 #include "tree.h"
 #include "window.h"
 #include <chrono>
@@ -31,31 +32,33 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
 
   set_border_width(1);
   set_default_size(500, 600);
-
   Gtk::Window::set_titlebar(m_headerBar);
-  m_VBox.set_size_request(500, 500);
   add(m_VBox);
-
   // Add the TreeView, inside a ScrolledWindow:
   m_ScrolledWindow.add(tree->m_TreeView);
 
   // Only show the scrollbars when they are necessary:
   m_ScrolledWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
   // Setup that notebook
-  m_Notebook_Graphs.resize(devices.size());
+  m_notebook_graphs.resize(devices.size());
+  m_notebook_legends.resize(devices.size());
   for (unsigned int page = 0; page < devices.size(); page++) {
     m_Notebook_Boxes.push_back(Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     vector<vector<Device::sensor_reading>> device_readings =
         devices[page].get_sensor_readings();
     for (unsigned int sensor_type = 0; sensor_type < device_readings.size();
-         sensor_type ++) { // Skip voltage and pwm
+         sensor_type++) { // Skip voltage and pwm
       if (!device_readings[sensor_type].empty()) {
-        m_Notebook_Graphs[page].push_back(std::make_unique<Graph>(
+        m_notebook_graphs[page].push_back(std::make_unique<Graph>(
             device_readings[sensor_type], page, sensor_type));
+        m_notebook_legends[page].push_back(std::make_unique<Legend>(
+            device_readings[sensor_type], page, sensor_type, 500));
       }
     }
-    for (auto &graph : m_Notebook_Graphs[page]) {
-      m_Notebook_Boxes[page].pack_start(*graph, true, true);
+    for (unsigned int i = 0; i < m_notebook_graphs[page].size(); i++) {
+      m_Notebook_Boxes[page].pack_start(*m_notebook_graphs[page][i]);
+      m_Notebook_Boxes[page].pack_start(m_notebook_legends[page][i]->m_legend,
+                                        false, false);
     }
     m_Notebook.append_page(m_Notebook_Boxes[page], devices[page].name);
   }
@@ -69,7 +72,6 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   // HeaderBar:
   m_headerBar.set_show_close_button(true);
   m_headerBar.set_custom_title(m_stackSwitcher);
-
   show_all_children();
 }
 
@@ -92,7 +94,7 @@ void Window::update_vals() {
 
 void Window::update_all() {
   tree->update_tree_view(all_readings);
-  for (auto &page : m_Notebook_Graphs) {
+  for (auto &page : m_notebook_graphs) {
     for (auto &graph : page) {
       unsigned int type = graph->get_type();
       unsigned int device_index = graph->get_device_index();
