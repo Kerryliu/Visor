@@ -29,9 +29,8 @@ private:
   const unsigned int right_padding = 55;
   const unsigned int scale_offset = 15;
 
-  unsigned int legend_offset;
-  unsigned int graph_width = width - graph_x_start - right_padding;
-  unsigned int graph_height = height - graph_y_start - legend_offset;
+  unsigned int graph_width;
+  unsigned int graph_height;
 
   const unsigned int over_shoot = 5;
   unsigned int prev_height = 0;
@@ -46,7 +45,6 @@ private:
   void check_resize();
   void gen_colors();
   void draw_title(const Cairo::RefPtr<Cairo::Context> &cr);
-  void draw_legend(const Cairo::RefPtr<Cairo::Context> &cr);
   void draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr);
   void make_plot(const Cairo::RefPtr<Cairo::Context> &cr);
 };

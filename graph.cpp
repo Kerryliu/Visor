@@ -10,6 +10,7 @@ Graph::Graph(const vector<Device::sensor_reading> &sensor_readings,
              int device_index, int type)
     : device_index(device_index), type(type), sensor_readings(sensor_readings) {
   gen_colors();
+  set_size_request(0, 75);
   raw_vals.resize(sensor_readings.size());
   scaled_vals.resize(sensor_readings.size());
 }
@@ -23,9 +24,8 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   width = allocation.get_width();
   height = allocation.get_height();
   draw_title(cr);
-  draw_legend(cr);
   graph_width = width - graph_x_start - right_padding;
-  graph_height = height - graph_y_start - scale_offset - legend_offset;
+  graph_height = height - graph_y_start - scale_offset;
   check_resize();
   draw_graph_grid(cr);
   make_plot(cr);
@@ -120,47 +120,12 @@ void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
   layout->show_in_cairo_context(cr);
 }
 
-void Graph::draw_legend(const Cairo::RefPtr<Cairo::Context> &cr) {
-  const unsigned int bottom_offset = 5;
-  const unsigned int side_offset = 50;
-  const unsigned int line_spacing = 20;
-  const unsigned int working_area = (width - side_offset * 2);
-  const unsigned int devices_per_line = 4;
-  const unsigned int spacing = working_area / devices_per_line;
-  unsigned int num_lines;
-  // Calulate spacing between keys:
-  num_lines =
-      (sensor_readings.size() + devices_per_line - 1) / devices_per_line;
-  // Attempt to draw the damn thing:
-  for (unsigned int i = 0; i < num_lines; i++) {
-    unsigned int y_coord =
-        height - bottom_offset - (line_spacing * (num_lines - i));
-    Pango::FontDescription font;
-    for (unsigned int spacing_index = 0; spacing_index < devices_per_line;
-         spacing_index++) {
-      unsigned int x_coord = side_offset + spacing * spacing_index;
-      unsigned int device_index = spacing_index + devices_per_line * i;
-      if (device_index >= sensor_readings.size()) {
-        break;
-      }
-      cr->move_to(x_coord, y_coord);
-      cr->set_source_rgb(colors[device_index][0], colors[device_index][1],
-                         colors[device_index][2]);
-      auto layout = create_pango_layout(sensor_readings[device_index].name);
-      layout->set_font_description(font);
-      layout->show_in_cairo_context(cr);
-    }
-  }
-
-  legend_offset = line_spacing * num_lines + bottom_offset * 2;
-}
-
 void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   // See https://www.cairographics.org/FAQ/#sharp_lines for the 0.5's here
   cr->set_line_width(line_width);
 
   // Vertical scale lines:
-  const unsigned int hor_min_line_spacing = 30;
+  const unsigned int hor_min_line_spacing = 20;
   cr->set_source_rgb(0.8, 0.8, 0.8);
   unsigned int vert_line_count = graph_height / hor_min_line_spacing;
   if (vert_line_count >= 20) {
@@ -206,15 +171,20 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   cr->set_source_rgb(0.5, 0.5, 0.5);
   Pango::FontDescription font;
   font.set_absolute_size(10000); // Not sure why this is so big
-  // Vertical scale; // Not sure why this is so big
-  unsigned int vert_stepping = Device::sensor_max_vals[type] / vert_line_count;
-  for (unsigned int i = 0; i <= vert_line_count; i++) {
-    cr->move_to(graph_width + graph_x_start + over_shoot,
-                graph_y_start + vert_line_spacing * i);
-    auto layout = create_pango_layout(
-        Device::formatValue(vert_stepping * (vert_line_count - i), type));
-    layout->set_font_description(font);
-    layout->show_in_cairo_context(cr);
+  // Vertical scale:
+  if (vert_line_count) {
+    unsigned int vert_stepping =
+        (vert_line_count != 0)
+            ? (Device::sensor_max_vals[type] / vert_line_count)
+            : Device::sensor_max_vals[type];
+    for (unsigned int i = 0; i <= vert_line_count; i++) {
+      cr->move_to(graph_width + graph_x_start + over_shoot,
+                  graph_y_start + vert_line_spacing * i);
+      auto layout = create_pango_layout(
+          Device::formatValue(vert_stepping * (vert_line_count - i), type));
+      layout->set_font_description(font);
+      layout->show_in_cairo_context(cr);
+    }
   }
   // Horizontal scale:
   unsigned int hor_stepping = 60 / hor_line_count;
