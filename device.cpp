@@ -132,7 +132,7 @@ string Device::set_name(string file_path) {
     getline(file, file_name);
     file.close();
   } else {
-    file_name = "Undefined";
+    file_name = "unknown";
   }
   return file_name;
 }
