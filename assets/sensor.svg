@@ -1,48 +1,79 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="350.248px" height="350.248px" viewBox="0 0 350.248 350.248" style="enable-background:new 0 0 350.248 350.248;"
-	 xml:space="preserve">
-<g>
-	<path d="M175.124,0C78.564,0,0.003,78.564,0.003,175.121c0,96.572,78.561,175.127,175.121,175.127
-		c96.572,0,175.121-78.555,175.121-175.127C350.251,78.573,271.696,0,175.124,0z M175.124,307.206
-		c-72.826,0-132.079-59.256-132.079-132.085c0-72.826,59.258-132.079,132.079-132.079c72.835,0,132.078,59.258,132.078,132.079
-		C307.208,247.956,247.959,307.206,175.124,307.206z"/>
-	<path d="M175.124,74.478c-55.493,0-100.649,45.15-100.649,100.644c0,55.499,45.156,100.655,100.649,100.655
-		c55.499,0,100.655-45.156,100.655-100.655S230.635,74.478,175.124,74.478z M175.124,251.036c-41.854,0-75.913-34.047-75.913-75.915
-		c0-41.859,34.059-75.913,75.913-75.913c41.868,0,75.915,34.053,75.915,75.913C251.039,216.983,216.992,251.036,175.124,251.036z"/>
-	<path d="M175.124,141.308c18.678,0,33.822,15.141,33.822,33.819s-15.145,33.816-33.822,33.816
-		c-18.675,0-33.819-15.139-33.819-33.816S156.449,141.308,175.124,141.308z"/>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="13.229167mm"
+   height="13.229167mm"
+   viewBox="0 0 13.229167 13.229167"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.1 r"
+   sodipodi:docname="sensor.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="33.936671"
+     inkscape:cy="23.398406"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     inkscape:window-x="1920"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-52.916667,-164.70834)">
+    <circle
+       style="fill:#000000;stroke-width:0.10734596"
+       id="path10"
+       cx="59.53125"
+       cy="171.32292"
+       r="6.6145835" />
+    <circle
+       style="fill:#ffffff;stroke-width:0.31445047"
+       id="path12"
+       cx="59.53125"
+       cy="171.32292"
+       r="3.96875" />
+    <circle
+       style="fill:#000000;stroke-width:0.31617996"
+       id="path14"
+       cx="59.53125"
+       cy="171.32292"
+       r="1.3229166" />
+  </g>
 </svg>

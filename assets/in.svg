@@ -1,45 +1,67 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="475.084px" height="475.085px" viewBox="0 0 475.084 475.085" style="enable-background:new 0 0 475.084 475.085;"
-	 xml:space="preserve">
-<g>
-	<path d="M362.296,125.055c-2.851-2.853-6.092-4.28-9.706-4.287c-0.77,0-1.902,0.193-3.432,0.572L236.1,149.319L284.917,17.13
-		c0.951-1.903,1.431-3.614,1.431-5.139c0-3.234-1.242-6.04-3.713-8.42C280.161,1.188,277.115,0,273.501,0h-93.645
-		c-3.045,0-5.708,0.855-7.994,2.568c-2.284,1.715-3.809,3.905-4.568,6.567l-57.386,235.546c-0.953,4.564,0.284,8.277,3.711,11.135
-		c2.473,2.099,5.421,3.139,8.848,3.139c1.524,0,2.666-0.089,3.427-0.281l115.914-28.838l-56.244,230.691
-		c-0.76,3.045-0.333,5.899,1.287,8.562c1.619,2.669,4.047,4.476,7.281,5.427c1.903,0.377,3.239,0.568,3.999,0.568
-		c5.52,0,9.514-2.375,11.991-7.136l154.172-330.332C366.389,133.049,365.728,128.86,362.296,125.055z"/>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
-<g>
-</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20.306141mm"
+   height="39.904488mm"
+   viewBox="0 0 20.306141 39.904488"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.1 r"
+   sodipodi:docname="in.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.959798"
+     inkscape:cx="33.912545"
+     inkscape:cy="63.759185"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     inkscape:window-x="1920"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-59.351308,-71.971875)">
+    <path
+       style="fill:#000000;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 66.145833,72.104167 h 7.9375 l -5.291666,15.875 H 79.375 l -19.84375,23.812503 7.9375,-18.520837 h -7.9375 z"
+       id="path26"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+  </g>
 </svg>
