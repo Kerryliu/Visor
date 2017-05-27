@@ -9,8 +9,9 @@ using std::string;
 using std::vector;
 
 Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
-               unsigned int device_index, unsigned int type)
-    : device_index(device_index), type(type) {
+               unsigned int device_index, unsigned int type,
+               vector<Gdk::RGBA> &colors)
+    : device_index(device_index), type(type), colors(colors) {
   m_legend.set_max_children_per_line(30);
   m_legend.set_selection_mode(Gtk::SelectionMode::SELECTION_NONE);
   m_legend.set_homogeneous();
@@ -21,19 +22,15 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
         new Gtk::Label(sensor_readings[i].name));
     m_labels.push_back(cur_label);
 
-    // Make color:
-    std::shared_ptr<Gdk::RGBA> cur_color(new Gdk::RGBA);
-    cur_color->set_red(0.5);
-    cur_color->set_green(0.5);
-    cur_color->set_blue(0.5);
-    cur_color->set_alpha(1.0); // opaque
-    m_colors.push_back(cur_color);
-
     // Make color button:
     std::shared_ptr<Gtk::ColorButton> cur_color_button(new Gtk::ColorButton);
-    cur_color_button->set_rgba(*cur_color);
+    cur_color_button->set_rgba(colors[i]);
     cur_color_button->set_relief(Gtk::RELIEF_NONE);
     m_color_buttons.push_back(cur_color_button);
+
+    // Link em':
+    cur_color_button->signal_color_set().connect(sigc::bind(
+        sigc::mem_fun(*this, &Legend::on_color_button_color_set), i));
 
     // Pack them together:
     std::shared_ptr<Gtk::Box> cur_key_box(new Gtk::Box);
@@ -42,6 +39,10 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
     m_key_boxes.push_back(cur_key_box);
     m_legend.add(*cur_key_box);
   }
+}
+
+void Legend::on_color_button_color_set(unsigned int color_button_index) {
+  colors[color_button_index] = m_color_buttons[color_button_index]->get_rgba();
 }
 
 const unsigned int Legend::get_type() const { return type; }

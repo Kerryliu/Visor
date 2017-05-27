@@ -2,8 +2,8 @@
 #define WINDOW_H
 
 #include "graph.h"
-#include "tree.h"
 #include "legend.h"
+#include "tree.h"
 #include <gtkmm.h>
 #include <memory>
 #include <thread>
@@ -26,7 +26,7 @@ private:
   vector<Gtk::Box> m_Notebook_Boxes;
   vector<vector<std::unique_ptr<Graph>>> m_notebook_graphs;
   vector<vector<std::unique_ptr<Legend>>> m_notebook_legends;
-
+  vector<vector<vector<Gdk::RGBA>>> m_colors;
   Glib::Dispatcher m_Dispatcher;
   std::unique_ptr<std::thread> m_WorkerThread =
       std::make_unique<std::thread>([this] { update_vals(); });
@@ -41,6 +41,7 @@ private:
 
   void update_vals();
   void update_all();
+  vector<Gdk::RGBA> gen_colors(unsigned int size);
   void on_button_quit();
 };
 

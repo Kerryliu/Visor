@@ -42,17 +42,23 @@ Window::Window() : m_VBox(Gtk::ORIENTATION_VERTICAL) {
   // Setup that notebook
   m_notebook_graphs.resize(devices.size());
   m_notebook_legends.resize(devices.size());
+  m_colors.resize(devices.size());
   for (unsigned int page = 0; page < devices.size(); page++) {
-    m_Notebook_Boxes.push_back(Gtk::Box(Gtk::ORIENTATION_VERTICAL));
     vector<vector<Device::sensor_reading>> device_readings =
         devices[page].get_sensor_readings();
+    m_Notebook_Boxes.push_back(Gtk::Box(Gtk::ORIENTATION_VERTICAL));
+    m_colors[page].resize(device_readings.size());
     for (unsigned int sensor_type = 0; sensor_type < device_readings.size();
          sensor_type++) { // Skip voltage and pwm
       if (!device_readings[sensor_type].empty()) {
-        m_notebook_graphs[page].push_back(std::make_unique<Graph>(
-            device_readings[sensor_type], page, sensor_type));
-        m_notebook_legends[page].push_back(std::make_unique<Legend>(
-            device_readings[sensor_type], page, sensor_type));
+        m_colors[page][sensor_type] =
+            gen_colors(device_readings[sensor_type].size());
+        m_notebook_graphs[page].push_back(
+            std::make_unique<Graph>(device_readings[sensor_type], page,
+                                    sensor_type, m_colors[page][sensor_type]));
+        m_notebook_legends[page].push_back(
+            std::make_unique<Legend>(device_readings[sensor_type], page,
+                                     sensor_type, m_colors[page][sensor_type]));
       }
     }
     for (unsigned int i = 0; i < m_notebook_graphs[page].size(); i++) {
@@ -101,6 +107,33 @@ void Window::update_all() {
       graph->update_vals(all_readings[device_index][type]);
     }
   }
+}
+
+vector<Gdk::RGBA> Window::gen_colors(unsigned int size) {
+  vector<Gdk::RGBA> rainbow;
+  static const vector<string> colors = {
+      "AliceBlue",      "AntiqueWhite",  "AntiqueWhite1", "AntiqueWhite2",
+      "AntiqueWhite3",  "AntiqueWhite4", "aqua",          "aquamarine",
+      "aquamarine1",    "aquamarine2",   "aquamarine3",   "aquamarine4",
+      "azure",          "azure1",        "azure2",        "azure3",
+      "azure4",         "beige",         "bisque",        "bisque1",
+      "bisque2",        "bisque3",       "bisque4",       "black",
+      "BlanchedAlmond", "blue",          "blue1",         "blue2",
+      "blue3",          "blue4",         "BlueViolet",    "brown",
+      "brown1",         "brown2",        "brown3",        "brown4",
+      "burlywood",      "burlywood1",    "burlywood2",    "burlywood3",
+      "burlywood4",     "CadetBlue",     "CadetBlue1",    "CadetBlue2",
+      "CadetBlue3",     "CadetBlue4",    "chartreuse",    "chartreuse1",
+      "chartreuse2",    "chartreuse3",   "chartreuse4",   "chocolate",
+      "chocolate1",     "chocolate2",    "chocolate3",    "chocolate4",
+      "coral",          "coral1",        "coral2",        "coral3",
+      "coral4"};
+  for (unsigned int i = 0; i < size; i++) {
+    string rand_color_name = colors[rand() % colors.size()];
+    Gdk::RGBA rand_RGBA(rand_color_name);
+    rainbow.push_back(rand_RGBA);
+  }
+  return rainbow;
 }
 
 void Window::on_button_quit() {

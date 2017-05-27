@@ -7,9 +7,10 @@
 using std::vector;
 
 Graph::Graph(const vector<Device::sensor_reading> &sensor_readings,
-             int device_index, int type)
-    : device_index(device_index), type(type), sensor_readings(sensor_readings) {
-  gen_colors();
+             int device_index, int type,
+             vector<Gdk::RGBA> &colors)
+    : device_index(device_index), type(type), sensor_readings(sensor_readings),
+      colors(colors) {
   set_size_request(0, 75);
   raw_vals.resize(sensor_readings.size());
   scaled_vals.resize(sensor_readings.size());
@@ -71,33 +72,6 @@ void Graph::check_resize() {
             (double)(*orig_y_it) / Device::sensor_max_vals[type] * graph_height;
       }
     }
-  }
-}
-
-void Graph::gen_colors() {
-  // This needs lots of work
-  double r = 0;
-  double g = 0;
-  double b = 0;
-  double stepping = 3 / (double)sensor_readings.size();
-  for (unsigned i = 0; i < sensor_readings.size(); i++) {
-    if (i % 3 == 0) { // 0, 3, 6...
-      r += stepping;
-      if (b == 1) {
-        b = 0;
-      }
-    } else if ((i + 1) % 3 == 0) { // 1, 4, 5..
-      g += stepping;
-      if (r == 1) {
-        r = 0;
-      }
-    } else { // 2, 5, 7...
-      b += stepping;
-      if (g == 1) {
-        g = 0;
-      }
-    }
-    colors.push_back({r, g, b});
   }
 }
 
@@ -205,7 +179,8 @@ void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
 
     // Attempt to plot
     cr->set_line_width(line_width);
-    cr->set_source_rgb(colors[i][0], colors[i][1], colors[i][2]);
+    cr->set_source_rgb(colors[i].get_red(), colors[i].get_green(),
+                       colors[i].get_blue());
     cr->move_to(starting_x_val, scaled_vals[i].front());
     unsigned int prev_y = 0;
     unsigned int loop_index = 0;
