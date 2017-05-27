@@ -11,8 +11,8 @@ using std::vector;
 Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
                unsigned int device_index, unsigned int type,
                vector<Gdk::RGBA> &m_colors, Gtk::Window &cur_window)
-    : device_index(device_index), type(type), m_colors(m_colors),
-      cur_window(cur_window) {
+    : device_index(device_index), type(type), sensor_readings(sensor_readings),
+      m_colors(m_colors), cur_window(cur_window) {
   m_legend.set_max_children_per_line(30);
   m_legend.set_selection_mode(Gtk::SelectionMode::SELECTION_NONE);
   m_legend.set_homogeneous();
@@ -50,7 +50,8 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
 }
 
 void Legend::on_color_button_color_set(unsigned int i) {
-  Gtk::ColorChooserDialog dialog("Please choose a color");
+  Gtk::ColorChooserDialog dialog("Pick a color for \"" +
+                                 sensor_readings[i].name + "\"");
   dialog.set_transient_for(cur_window);
   dialog.set_rgba(m_colors[i]);
   const int result = dialog.run();
