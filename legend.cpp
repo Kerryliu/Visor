@@ -32,7 +32,6 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
     // Add color label to color button:
     std::shared_ptr<Gtk::Button> cur_color_button(new Gtk::Button);
     cur_color_button->add(*cur_color_label);
-    cur_color_button->set_border_width(0);
     cur_color_button->set_relief(Gtk::RELIEF_NONE);
     m_color_buttons.push_back(cur_color_button);
 
