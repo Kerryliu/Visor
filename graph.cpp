@@ -7,8 +7,7 @@
 using std::vector;
 
 Graph::Graph(const vector<Device::sensor_reading> &sensor_readings,
-             int device_index, int type,
-             vector<Gdk::RGBA> &colors)
+             int device_index, int type, vector<Gdk::RGBA> &colors)
     : device_index(device_index), type(type), sensor_readings(sensor_readings),
       colors(colors) {
   set_size_request(0, 75);
@@ -113,7 +112,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   }
   const double vert_line_spacing = (double)graph_height / vert_line_count;
   for (unsigned int i = 1; i < vert_line_count; i++) {
-    cr->move_to(graph_x_start, 0.5 + graph_y_start + vert_line_spacing * i);
+    cr->move_to(graph_x_start,
+                0.5 + graph_y_start + round(vert_line_spacing * i));
     cr->line_to(graph_x_start + graph_width + over_shoot,
                 0.5 + graph_y_start + vert_line_spacing * i);
   }
@@ -121,7 +121,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   const unsigned int hor_line_count = 6;
   const double hor_line_spacing = (double)graph_width / hor_line_count;
   for (unsigned int i = 1; i < hor_line_count; i++) {
-    cr->move_to(0.5 + graph_x_start + hor_line_spacing * i, graph_y_start);
+    cr->move_to(0.5 + graph_x_start +
+                round(hor_line_spacing * i), graph_y_start);
     cr->line_to(0.5 + graph_x_start + hor_line_spacing * i,
                 graph_y_start + graph_height + over_shoot);
   }
@@ -153,7 +154,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
             : Device::sensor_max_vals[type];
     for (unsigned int i = 0; i <= vert_line_count; i++) {
       cr->move_to(graph_width + graph_x_start + over_shoot,
-                  graph_y_start + vert_line_spacing * i);
+                  graph_y_start + round(vert_line_spacing * i));
       auto layout = create_pango_layout(
           Device::formatValue(vert_stepping * (vert_line_count - i), type));
       layout->set_font_description(font);
@@ -163,7 +164,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   // Horizontal scale:
   unsigned int hor_stepping = 60 / hor_line_count;
   for (unsigned int i = 0; i <= hor_line_count; i++) {
-    cr->move_to(graph_x_start + hor_line_spacing * i,
+    cr->move_to(graph_x_start + round(hor_line_spacing * i),
                 graph_y_start + graph_height + over_shoot);
     auto layout = create_pango_layout(
         std::to_string(hor_stepping * (hor_line_count - i)));

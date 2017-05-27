@@ -112,9 +112,8 @@ void Window::update_all() {
 vector<Gdk::RGBA> Window::gen_colors(unsigned int size) {
   vector<Gdk::RGBA> rainbow;
   static const vector<string> colors = {
-      "green",      "red",   "blue",      "orange",    "BlanchedAlmond",
-      "violet", "brown", "burlywood", "CadetBlue", "chartreuse",
-      "chocolate",  "black", "coral"};
+      "green",     "red",       "blue",       "orange",    "violet", "brown",
+      "burlywood", "CadetBlue", "chartreuse", "chocolate", "black",  "coral"};
   for (unsigned int i = 0; i < size; i++) {
     string rand_color_name = colors[i % colors.size()];
     Gdk::RGBA rand_RGBA(rand_color_name);
