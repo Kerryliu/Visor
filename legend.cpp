@@ -36,6 +36,7 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
     std::shared_ptr<Gtk::Box> cur_key_box(new Gtk::Box);
     cur_key_box->pack_start(*cur_color_button, Gtk::PACK_SHRINK);
     cur_key_box->pack_start(*cur_label, Gtk::PACK_SHRINK);
+    cur_key_box->set_can_focus(false);
     m_key_boxes.push_back(cur_key_box);
     m_legend.add(*cur_key_box);
   }
