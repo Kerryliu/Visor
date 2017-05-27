@@ -10,7 +10,7 @@ using std::vector;
 
 class Tree {
 public:
-  Gtk::TreeView m_TreeView;
+  Gtk::TreeView m_treeview;
   Tree(vector<vector<vector<Device::sensor_reading>>> &all_readings,
        vector<string> &device_names);
 
@@ -20,7 +20,7 @@ public:
 private:
   vector<vector<vector<Device::sensor_reading>>> all_readings;
   vector<string> device_names;
-  Glib::RefPtr<Gtk::TreeStore> m_refTreeModel;
+  Glib::RefPtr<Gtk::TreeStore> m_ref_tree_model;
 
   class ModelColumns : public Gtk::TreeModel::ColumnRecord {
   public:
@@ -45,7 +45,7 @@ private:
     Gtk::TreeModelColumn<Glib::ustring> m_col_avg_val;
   };
 
-  ModelColumns m_Columns;
+  ModelColumns m_columns;
 
   void make_tree_view();
 };

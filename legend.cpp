@@ -10,8 +10,8 @@ using std::vector;
 
 Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
                unsigned int device_index, unsigned int type,
-               vector<Gdk::RGBA> &colors)
-    : device_index(device_index), type(type), colors(colors) {
+               vector<Gdk::RGBA> &m_colors)
+    : device_index(device_index), type(type), m_colors(m_colors) {
   m_legend.set_max_children_per_line(30);
   m_legend.set_selection_mode(Gtk::SelectionMode::SELECTION_NONE);
   m_legend.set_homogeneous();
@@ -24,7 +24,7 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
 
     // Make color button:
     std::shared_ptr<Gtk::ColorButton> cur_color_button(new Gtk::ColorButton);
-    cur_color_button->set_rgba(colors[i]);
+    cur_color_button->set_rgba(m_colors[i]);
     cur_color_button->set_relief(Gtk::RELIEF_NONE);
     m_color_buttons.push_back(cur_color_button);
 
@@ -43,7 +43,8 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
 }
 
 void Legend::on_color_button_color_set(unsigned int color_button_index) {
-  colors[color_button_index] = m_color_buttons[color_button_index]->get_rgba();
+  m_colors[color_button_index] =
+      m_color_buttons[color_button_index]->get_rgba();
 }
 
 const unsigned int Legend::get_type() const { return type; }

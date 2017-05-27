@@ -11,7 +11,7 @@ using std::vector;
 class Graph : public Gtk::DrawingArea {
 public:
   Graph(const vector<Device::sensor_reading> &sensor_readings, int device_index,
-        int type, vector<Gdk::RGBA> &colors);
+        int type, vector<Gdk::RGBA> &m_colors);
   void update_vals(vector<Device::sensor_reading> &sensor_readings);
   const unsigned int get_type() const;
   const unsigned int get_device_index() const;
@@ -38,7 +38,7 @@ private:
   vector<std::list<unsigned int>> raw_vals;
   vector<std::list<unsigned int>> scaled_vals;
   vector<Device::sensor_reading> sensor_readings;
-  vector<Gdk::RGBA> &colors;
+  vector<Gdk::RGBA> &m_colors;
   bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
   bool update();
   void check_resize();

@@ -7,9 +7,9 @@
 using std::vector;
 
 Graph::Graph(const vector<Device::sensor_reading> &sensor_readings,
-             int device_index, int type, vector<Gdk::RGBA> &colors)
+             int device_index, int type, vector<Gdk::RGBA> &m_colors)
     : device_index(device_index), type(type), sensor_readings(sensor_readings),
-      colors(colors) {
+      m_colors(m_colors) {
   set_size_request(0, 75);
   raw_vals.resize(sensor_readings.size());
   scaled_vals.resize(sensor_readings.size());
@@ -180,8 +180,8 @@ void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
 
     // Attempt to plot
     cr->set_line_width(line_width);
-    cr->set_source_rgb(colors[i].get_red(), colors[i].get_green(),
-                       colors[i].get_blue());
+    cr->set_source_rgb(m_colors[i].get_red(), m_colors[i].get_green(),
+                       m_colors[i].get_blue());
     cr->move_to(starting_x_val, scaled_vals[i].front());
     unsigned int prev_y = 0;
     unsigned int loop_index = 0;
