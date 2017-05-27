@@ -10,8 +10,9 @@ using std::vector;
 
 Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
                unsigned int device_index, unsigned int type,
-               vector<Gdk::RGBA> &m_colors)
-    : device_index(device_index), type(type), m_colors(m_colors) {
+               vector<Gdk::RGBA> &m_colors, Gtk::Window &cur_window)
+    : device_index(device_index), type(type), m_colors(m_colors),
+      cur_window(cur_window) {
   m_legend.set_max_children_per_line(30);
   m_legend.set_selection_mode(Gtk::SelectionMode::SELECTION_NONE);
   m_legend.set_homogeneous();
@@ -22,14 +23,21 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
         new Gtk::Label(sensor_readings[i].name));
     m_labels.push_back(cur_label);
 
-    // Make color button:
-    std::shared_ptr<Gtk::ColorButton> cur_color_button(new Gtk::ColorButton);
-    cur_color_button->set_rgba(m_colors[i]);
+    // Make color label:
+    std::shared_ptr<Gtk::Label> cur_color_label(new Gtk::Label);
+    cur_color_label->override_background_color(m_colors[i]);
+    cur_color_label->set_size_request(35, 0);
+    m_color_labels.push_back(cur_color_label);
+
+    // Add color label to color button:
+    std::shared_ptr<Gtk::Button> cur_color_button(new Gtk::Button);
+    cur_color_button->add(*cur_color_label);
+    cur_color_button->set_border_width(0);
     cur_color_button->set_relief(Gtk::RELIEF_NONE);
     m_color_buttons.push_back(cur_color_button);
 
     // Link em':
-    cur_color_button->signal_color_set().connect(sigc::bind(
+    cur_color_button->signal_clicked().connect(sigc::bind(
         sigc::mem_fun(*this, &Legend::on_color_button_color_set), i));
 
     // Pack them together:
@@ -42,9 +50,15 @@ Legend::Legend(const vector<Device::sensor_reading> &sensor_readings,
   }
 }
 
-void Legend::on_color_button_color_set(unsigned int color_button_index) {
-  m_colors[color_button_index] =
-      m_color_buttons[color_button_index]->get_rgba();
+void Legend::on_color_button_color_set(unsigned int i) {
+  Gtk::ColorChooserDialog dialog("Please choose a color");
+  dialog.set_transient_for(cur_window);
+  dialog.set_rgba(m_colors[i]);
+  const int result = dialog.run();
+  if (result == Gtk::RESPONSE_OK) {
+    m_colors[i] = dialog.get_rgba();
+    m_color_labels[i]->override_background_color(dialog.get_rgba());
+  }
 }
 
 const unsigned int Legend::get_type() const { return type; }

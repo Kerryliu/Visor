@@ -60,9 +60,9 @@ Window::Window() : m_vbox(Gtk::ORIENTATION_VERTICAL) {
         m_notebook_graphs[page].push_back(
             std::make_unique<Graph>(device_readings[sensor_type], page,
                                     sensor_type, m_colors[page][sensor_type]));
-        m_notebook_legends[page].push_back(
-            std::make_unique<Legend>(device_readings[sensor_type], page,
-                                     sensor_type, m_colors[page][sensor_type]));
+        m_notebook_legends[page].push_back(std::make_unique<Legend>(
+            device_readings[sensor_type], page, sensor_type,
+            m_colors[page][sensor_type], *this));
       }
     }
     for (unsigned int i = 0; i < m_notebook_graphs[page].size(); i++) {
