@@ -35,8 +35,9 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 bool Graph::update() {
   // update values
   for (unsigned int i = 0; i < sensor_readings.size(); i++) {
-    int raw_val = sensor_readings[i].cur_val;
-    int scaled_val =
+    const unsigned int raw_val =
+        (sensor_readings[i].cur_val >= 0) ? sensor_readings[i].cur_val : 0;
+    const unsigned int scaled_val =
         graph_y_start + graph_height -
         (double)raw_val / Device::sensor_max_vals[type] * graph_height;
     raw_vals[i].push_front(raw_val);
@@ -62,9 +63,8 @@ void Graph::check_resize() {
   if (prev_height != height) {
     prev_height = height;
     for (unsigned int i = 0; i < sensor_readings.size(); i++) {
-      std::list<unsigned int>::iterator orig_y_it;
-      std::list<unsigned int>::iterator norm_y_it;
-      for (orig_y_it = raw_vals[i].begin(), norm_y_it = scaled_vals[i].begin();
+      for (auto orig_y_it = raw_vals[i].begin(),
+                norm_y_it = scaled_vals[i].begin();
            orig_y_it != raw_vals[i].end(); orig_y_it++, norm_y_it++) {
         *norm_y_it =
             graph_y_start + graph_height -
@@ -148,7 +148,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   font.set_absolute_size(10000); // Not sure why this is so big
   // Vertical scale:
   if (vert_line_count) {
-    unsigned int vert_stepping =
+    const unsigned int vert_stepping =
         (vert_line_count != 0)
             ? (Device::sensor_max_vals[type] / vert_line_count)
             : Device::sensor_max_vals[type];
@@ -162,7 +162,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
     }
   }
   // Horizontal scale:
-  unsigned int hor_stepping = 60 / hor_line_count;
+  const unsigned int hor_stepping = 60 / hor_line_count;
   for (unsigned int i = 0; i <= hor_line_count; i++) {
     cr->move_to(graph_x_start + round(hor_line_spacing * i) - over_shoot,
                 graph_y_start + graph_height + over_shoot);
@@ -175,8 +175,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
 
 void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
   for (unsigned int i = 0; i < sensor_readings.size(); i++) {
-    unsigned int starting_x_val = graph_width + graph_x_start;
-    double delta_x = (double)graph_width / 60;
+    const unsigned int starting_x_val = graph_width + graph_x_start;
+    const double delta_x = (double)graph_width / 60;
 
     // Attempt to plot
     cr->set_line_width(line_width);
