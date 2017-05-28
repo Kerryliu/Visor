@@ -38,13 +38,13 @@ void Device::refresh_sensors() {
     vector<sensor_reading> &prev_sensor_type_readings =
         prev_sensor_readings[type];
 
-    for (unsigned int sensor_number = 0;
-         sensor_number < sensor_type_counts[type]; sensor_number++) {
+    for (unsigned int sensor_index = 0;
+         sensor_index < sensor_type_counts[type]; sensor_index++) {
       string cur_sensor_name;
 
       // Previous values to compare against:
       sensor_reading prev_sensor_type_reading =
-          prev_sensor_type_readings[sensor_number];
+          prev_sensor_type_readings[sensor_index];
       int prev_cur_val =
       prev_sensor_type_reading.cur_val;
       int prev_min_val = prev_sensor_type_reading.min_val;
@@ -63,7 +63,7 @@ void Device::refresh_sensors() {
 
       // Get sensor value:
       file.open(file_path + sensor_types_paths[type] +
-                std::to_string(sensor_number + 1) + "_input");
+                std::to_string(sensor_index + 1) + "_input");
       getline(file, temp_string);
       file.close();
 
@@ -82,12 +82,12 @@ void Device::refresh_sensors() {
 
       // see if sensor value has name:
       file.open(file_path + sensor_types_paths[type] +
-                std::to_string(sensor_number + 1) + "_label");
+                std::to_string(sensor_index + 1) + "_label");
       if (file) {
         getline(file, cur_sensor_name);
         file.close();
       } else {
-        cur_sensor_name = "Sensor " + std::to_string(sensor_number + 1);
+        cur_sensor_name = "Sensor " + std::to_string(sensor_index + 1);
       }
 
       // Create new sensor_reading struct for cur vals
@@ -98,7 +98,7 @@ void Device::refresh_sensors() {
       cur_sensor_reading.max_val = cur_max_val;
       cur_sensor_reading.tick = cur_tick;
       cur_sensor_reading.avg_val = cur_avg_val;
-      cur_sensor_type_readings[sensor_number] = cur_sensor_reading;
+      cur_sensor_type_readings[sensor_index] = cur_sensor_reading;
     }
     sensor_readings[type] = cur_sensor_type_readings;
   }
