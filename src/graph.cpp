@@ -18,6 +18,11 @@ Graph::Graph(const vector<Device::sensor_reading> &sensor_readings,
 const unsigned int Graph::get_type() const { return type; }
 const unsigned int Graph::get_device_index() const { return device_index; }
 
+void Graph::update_vals(vector<Device::sensor_reading> &sensor_readings) {
+  this->sensor_readings = sensor_readings;
+  update();
+}
+
 // https://developer.gnome.org/gtkmm-tutorial/stable/chapter-drawingarea.html.en
 bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   Gtk::Allocation allocation = get_allocation();
@@ -72,11 +77,6 @@ void Graph::check_resize() {
       }
     }
   }
-}
-
-void Graph::update_vals(vector<Device::sensor_reading> &sensor_readings) {
-  this->sensor_readings = sensor_readings;
-  update();
 }
 
 void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
