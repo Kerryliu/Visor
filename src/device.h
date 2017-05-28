@@ -23,7 +23,7 @@ public:
     int min_val = INT_MAX;
     int max_val = INT_MIN;
     int tick = 0;
-    int avg_val = 0;
+    long int avg_val = 0;
   };
 
   const string file_path;
