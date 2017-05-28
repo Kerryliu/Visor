@@ -28,7 +28,7 @@ Window::Window() : m_vbox(Gtk::ORIENTATION_VERTICAL) {
   tree = std::make_unique<Tree>(all_readings, device_names);
 
   // Start a new worker thread:
-  m_Dispatcher.connect(sigc::mem_fun(*this, &Window::update_all));
+  m_Dispatcher.connect(sigc::mem_fun(*this, &Window::update_all_components));
 
   set_border_width(1);
   set_default_size(500, 600);
@@ -87,7 +87,8 @@ Window::Window() : m_vbox(Gtk::ORIENTATION_VERTICAL) {
 
 Window::~Window() { on_button_quit(); }
 
-void Window::update_vals() {
+void Window::update_device_vals() {
+  // Refresh values every second
   while (1) {
     if (stop_work) {
       break;
@@ -102,7 +103,8 @@ void Window::update_vals() {
   }
 }
 
-void Window::update_all() {
+void Window::update_all_components() {
+  // Update the values on the tree and graphs
   tree->update_tree_view(all_readings);
   for (auto &page : m_notebook_graphs) {
     for (auto &graph : page) {
@@ -114,6 +116,8 @@ void Window::update_all() {
 }
 
 vector<Gdk::RGBA> Window::gen_colors(unsigned int size) {
+  // This could probably go somewhere else, but the colors are shared between
+  // the graphs and legends...
   vector<Gdk::RGBA> rainbow;
   static const vector<string> m_colors = {
       "green",     "red",       "blue",       "orange",    "violet", "brown",
