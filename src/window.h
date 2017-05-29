@@ -12,7 +12,7 @@
 using std::string;
 
 // Header file is very messy right now...
-class Window : public Gtk::Window {
+class Window : public Gtk::ApplicationWindow {
 public:
   Window();
   virtual ~Window();
