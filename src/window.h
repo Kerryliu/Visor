@@ -25,20 +25,24 @@ private:
   Gtk::HeaderBar m_headerbar;
   Gtk::StackSwitcher m_stackswitcher;
   Gtk::Stack m_stack;
-  
+
   // Computer Devices:
   vector<Device> devices;
   vector<vector<vector<Device::sensor_reading>>> all_readings;
   vector<string> device_names;
+
   // Summary tree
   Gtk::ScrolledWindow m_scrolledwindow;
   std::unique_ptr<Tree> tree;
+
   // Notebook:
   Gtk::Notebook m_notebook;
   vector<Gtk::Box> m_Notebook_Boxes;
   vector<vector<std::unique_ptr<Graph>>> m_notebook_graphs;
   vector<vector<std::unique_ptr<Legend>>> m_notebook_legends;
   vector<vector<vector<Gdk::RGBA>>> m_colors;
+  vector<Gdk::RGBA> gen_colors(unsigned int size);
+
   // Async value updates to prevent stalls:
   Glib::Dispatcher m_Dispatcher;
   bool stop_work = false;
@@ -47,7 +51,6 @@ private:
 
   void update_device_vals();
   void update_all_components();
-  vector<Gdk::RGBA> gen_colors(unsigned int size);
   void on_button_quit();
 };
 
