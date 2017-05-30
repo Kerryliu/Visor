@@ -20,6 +20,12 @@ public:
 private:
   const std::string file_path = "/sys/class/hwmon/";
 
+  // Other important stuffs:
+  Gtk::Box m_vbox;
+  Gtk::HeaderBar m_headerbar;
+  Gtk::StackSwitcher m_stackswitcher;
+  Gtk::Stack m_stack;
+  
   // Computer Devices:
   vector<Device> devices;
   vector<vector<vector<Device::sensor_reading>>> all_readings;
@@ -38,11 +44,6 @@ private:
   bool stop_work = false;
   std::unique_ptr<std::thread> m_WorkerThread =
       std::make_unique<std::thread>([this] { update_device_vals(); });
-  // Other important stuffs:
-  Gtk::Box m_vbox;
-  Gtk::HeaderBar m_headerbar;
-  Gtk::StackSwitcher m_stackswitcher;
-  Gtk::Stack m_stack;
 
   void update_device_vals();
   void update_all_components();
