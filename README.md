@@ -1,6 +1,7 @@
 # Visor
 A new sensor monitoring app for linux!
 
+Shows the current, minimum, maximum, and average value for each sensor in the first tab, and their respective graphs in the second tab.  Expect many more changes and improvements!
 ![screenshot](https://github.com/Kerryliu/Visor/blob/master/misc/summary_screenshot.png)
 
 # Running it:
