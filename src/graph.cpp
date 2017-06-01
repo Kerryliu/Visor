@@ -96,11 +96,12 @@ void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
 void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   // See https://www.cairographics.org/FAQ/#sharp_lines for the 0.5's here
   cr->set_line_width(line_width);
+  const unsigned int overshoot = 5;
 
   // Vertical scale lines:
-  const unsigned int hor_min_line_spacing = 20;
+  const unsigned int vect_min_line_spacing = 20;
   cr->set_source_rgb(0.8, 0.8, 0.8);
-  unsigned int vert_line_count = graph_height / hor_min_line_spacing;
+  unsigned int vert_line_count = graph_height / vect_min_line_spacing;
   if (vert_line_count >= 20) {
     vert_line_count = 20;
   } else if (vert_line_count >= 10) {
@@ -114,7 +115,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   for (unsigned int i = 1; i < vert_line_count; i++) {
     cr->move_to(graph_x_start,
                 0.5 + graph_y_start + round(vert_line_spacing * i));
-    cr->line_to(graph_x_start + graph_width + over_shoot,
+    cr->line_to(graph_x_start + graph_width + overshoot,
                 0.5 + graph_y_start + round(vert_line_spacing * i));
   }
   // Horizontal scale lines:
@@ -124,21 +125,21 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
     cr->move_to(0.5 + graph_x_start + round(hor_line_spacing * i),
                 graph_y_start);
     cr->line_to(0.5 + graph_x_start + round(hor_line_spacing * i),
-                graph_y_start + graph_height + over_shoot);
+                graph_y_start + graph_height + overshoot);
   }
   cr->stroke();
 
   // Draw outer box:
   cr->set_source_rgb(0.6, 0.6, 0.6);
   cr->move_to(graph_x_start, 0.5 + graph_y_start);
-  cr->line_to(graph_x_start + graph_width + over_shoot, 0.5 + graph_y_start);
+  cr->line_to(graph_x_start + graph_width + overshoot, 0.5 + graph_y_start);
   cr->move_to(0.5 + graph_x_start, graph_y_start);
-  cr->line_to(0.5 + graph_x_start, graph_y_start + graph_height + over_shoot);
+  cr->line_to(0.5 + graph_x_start, graph_y_start + graph_height + overshoot);
   cr->move_to(0.5 + graph_x_start + graph_width, graph_y_start);
   cr->line_to(0.5 + graph_x_start + graph_width,
-              graph_y_start + graph_height + over_shoot);
+              graph_y_start + graph_height + overshoot);
   cr->move_to(graph_x_start, 0.5 + graph_y_start + graph_height + line_width);
-  cr->line_to(graph_x_start + graph_width + over_shoot,
+  cr->line_to(graph_x_start + graph_width + overshoot,
               0.5 + graph_y_start + graph_height + line_width);
   cr->stroke();
 
@@ -153,7 +154,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
             ? (Device::sensor_max_vals[type] / vert_line_count)
             : Device::sensor_max_vals[type];
     for (unsigned int i = 0; i <= vert_line_count; i++) {
-      cr->move_to(graph_width + graph_x_start + over_shoot,
+      cr->move_to(graph_width + graph_x_start + overshoot,
                   graph_y_start + round(vert_line_spacing * i));
       auto layout = create_pango_layout(
           Device::formatValue(vert_stepping * (vert_line_count - i), type));
@@ -164,8 +165,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   // Horizontal scale:
   const unsigned int hor_stepping = 60 / hor_line_count;
   for (unsigned int i = 0; i <= hor_line_count; i++) {
-    cr->move_to(graph_x_start + round(hor_line_spacing * i) - over_shoot,
-                graph_y_start + graph_height + over_shoot);
+    cr->move_to(graph_x_start + round(hor_line_spacing * i) - overshoot,
+                graph_y_start + graph_height + overshoot);
     auto layout = create_pango_layout(
         std::to_string(hor_stepping * (hor_line_count - i)));
     layout->set_font_description(font);

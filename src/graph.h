@@ -32,7 +32,6 @@ private:
   unsigned int graph_width;
   unsigned int graph_height;
 
-  const unsigned int over_shoot = 5;
   unsigned int prev_height = 0;
 
   vector<std::list<unsigned int>> raw_vals;
