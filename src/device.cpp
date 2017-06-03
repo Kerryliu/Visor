@@ -26,7 +26,8 @@ Device::Device(string file_path)
   }
 }
 
-const vector<vector<Device::sensor_reading>> &Device::get_sensor_readings() {
+const vector<vector<Device::sensor_reading>> &
+Device::get_sensor_readings() const {
   return sensor_readings;
 }
 
@@ -38,15 +39,14 @@ void Device::refresh_sensors() {
     vector<sensor_reading> &prev_sensor_type_readings =
         prev_sensor_readings[type];
 
-    for (unsigned int sensor_index = 0;
-         sensor_index < sensor_type_counts[type]; sensor_index++) {
+    for (unsigned int sensor_index = 0; sensor_index < sensor_type_counts[type];
+         sensor_index++) {
       string cur_sensor_name;
 
       // Previous values to compare against:
       sensor_reading prev_sensor_type_reading =
           prev_sensor_type_readings[sensor_index];
-      int prev_cur_val =
-      prev_sensor_type_reading.cur_val;
+      int prev_cur_val = prev_sensor_type_reading.cur_val;
       int prev_min_val = prev_sensor_type_reading.min_val;
       int prev_max_val = prev_sensor_type_reading.max_val;
       int prev_avg_val = prev_sensor_type_reading.avg_val;
@@ -70,7 +70,7 @@ void Device::refresh_sensors() {
       // Sleep sometimes breaks stoi for some reason
       try {
         cur_cur_val = std::stoi(temp_string);
-      } catch (...){
+      } catch (...) {
         cur_cur_val = prev_cur_val;
       }
       // Do calculations for min, max, and avg

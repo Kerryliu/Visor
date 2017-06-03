@@ -42,7 +42,7 @@ public:
 
   void refresh_sensors();
   static string formatValue(int val, int sensor_type);
-  const vector<vector<sensor_reading>> &get_sensor_readings();
+  const vector<vector<sensor_reading>> &get_sensor_readings() const;
 
 private:
   vector<vector<sensor_reading>> sensor_readings =
