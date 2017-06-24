@@ -26,8 +26,8 @@ void Tree::make_tree_view() {
 
     device_row = *(m_ref_tree_model->append());
     device_row[m_columns.m_col_name] = device_names[i] + ": ";
-    device_row[m_columns.m_pixbuf] =
-        Gdk::Pixbuf::create_from_file("assets/chip.svg", 20, 20, true);
+    device_row[m_columns.m_pixbuf] = Gdk::Pixbuf::create_from_file(
+        "assets/chip.svg", icon_size, icon_size, true);
 
     for (unsigned int sensor_type = 0; sensor_type < device_readings.size();
          sensor_type++) {
@@ -36,15 +36,16 @@ void Tree::make_tree_view() {
         sensor_types_row[m_columns.m_col_name] =
             Device::sensor_types[sensor_type] + ": ";
         sensor_types_row[m_columns.m_pixbuf] = Gdk::Pixbuf::create_from_file(
-            Device::sensor_types_icons[sensor_type], 20, 20, true);
+            Device::sensor_types_icons[sensor_type], icon_size, icon_size,
+            true);
 
         for (unsigned int j = 0; j < device_readings[sensor_type].size(); j++) {
           readings_row =
               *(m_ref_tree_model->append(sensor_types_row.children()));
           readings_row[m_columns.m_col_name] =
               device_readings[sensor_type][j].name + ": ";
-          readings_row[m_columns.m_pixbuf] =
-              Gdk::Pixbuf::create_from_file("assets/sensor.svg", 20, 20, true);
+          readings_row[m_columns.m_pixbuf] = Gdk::Pixbuf::create_from_file(
+              "assets/sensor.svg", icon_size, icon_size, true);
           readings_row[m_columns.m_col_cur_val] = Device::formatValue(
               device_readings[sensor_type][j].cur_val, sensor_type);
           readings_row[m_columns.m_col_min_val] = Device::formatValue(

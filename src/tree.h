@@ -21,6 +21,7 @@ private:
   vector<vector<vector<Device::sensor_reading>>> all_readings;
   vector<string> device_names;
   Glib::RefPtr<Gtk::TreeStore> m_ref_tree_model;
+  const unsigned int icon_size = 20;
 
   class ModelColumns : public Gtk::TreeModel::ColumnRecord {
   public:

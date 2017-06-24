@@ -10,7 +10,7 @@ Graph::Graph(const vector<Device::sensor_reading> &sensor_readings,
              int device_index, int type, vector<Gdk::RGBA> &m_colors)
     : device_index(device_index), type(type), sensor_readings(sensor_readings),
       m_colors(m_colors) {
-  set_size_request(0, 75);
+  set_size_request(0, 25);
   raw_vals.resize(sensor_readings.size());
   scaled_vals.resize(sensor_readings.size());
 }
@@ -47,7 +47,7 @@ bool Graph::update() {
         (double)raw_val / Device::sensor_max_vals[type] * graph_height;
     raw_vals[i].push_front(raw_val);
     scaled_vals[i].push_front(scaled_val);
-    if (scaled_vals[i].size() > 61) {
+    if (scaled_vals[i].size() > ticks + 1) {
       raw_vals[i].pop_back();
       scaled_vals[i].pop_back();
     }
@@ -82,8 +82,9 @@ void Graph::check_resize() {
 void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
   const int left_offset = 10;
   const int top_offset = 10;
+  const double title_color = 0.4;
   cr->move_to(left_offset, top_offset);
-  cr->set_source_rgb(0.4, 0.4, 0.4);
+  cr->set_source_rgb(title_color, title_color, title_color);
 
   Pango::FontDescription font;
   font.set_weight(Pango::WEIGHT_BOLD);
@@ -97,20 +98,23 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   // See https://www.cairographics.org/FAQ/#sharp_lines for the 0.5's here
   cr->set_line_width(line_width);
   const unsigned int overshoot = 5;
+  const double scale_line_color = 0.8;
 
   // Vertical scale lines:
   const unsigned int vect_min_line_spacing = 20;
-  cr->set_source_rgb(0.8, 0.8, 0.8);
+  const unsigned int max_line_count = 20;
+  cr->set_source_rgb(scale_line_color, scale_line_color, scale_line_color);
   unsigned int vert_line_count = graph_height / vect_min_line_spacing;
-  if (vert_line_count >= 20) {
-    vert_line_count = 20;
-  } else if (vert_line_count >= 10) {
-    vert_line_count = 10;
-  } else if (vert_line_count >= 5) {
-    vert_line_count = 5;
+  if (vert_line_count >= max_line_count) {
+    vert_line_count = max_line_count;
+  } else if (vert_line_count >= max_line_count / 2) {
+    vert_line_count = max_line_count / 2;
+  } else if (vert_line_count >= max_line_count / 4) {
+    vert_line_count = max_line_count / 4;
   } else if (vert_line_count == 3) {
     vert_line_count = 2;
   }
+
   const double vert_line_spacing = (double)graph_height / vert_line_count;
   for (unsigned int i = 1; i < vert_line_count; i++) {
     cr->move_to(graph_x_start,
@@ -118,6 +122,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
     cr->line_to(graph_x_start + graph_width + overshoot,
                 0.5 + graph_y_start + round(vert_line_spacing * i));
   }
+
   // Horizontal scale lines:
   const unsigned int hor_line_count = 6;
   const double hor_line_spacing = (double)graph_width / hor_line_count;
@@ -130,7 +135,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   cr->stroke();
 
   // Draw outer box:
-  cr->set_source_rgb(0.6, 0.6, 0.6);
+  const double box_line_color = 0.6;
+  cr->set_source_rgb(box_line_color, box_line_color, box_line_color);
   cr->move_to(graph_x_start, 0.5 + graph_y_start);
   cr->line_to(graph_x_start + graph_width + overshoot, 0.5 + graph_y_start);
   cr->move_to(0.5 + graph_x_start, graph_y_start);
@@ -144,7 +150,8 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   cr->stroke();
 
   // Make that scale:
-  cr->set_source_rgb(0.5, 0.5, 0.5);
+  const double scale_color = 0.4;
+  cr->set_source_rgb(scale_color, scale_color, scale_color);
   Pango::FontDescription font;
   font.set_absolute_size(10000); // Not sure why this is so big
   // Vertical scale:
@@ -163,7 +170,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
     }
   }
   // Horizontal scale:
-  const unsigned int hor_stepping = 60 / hor_line_count;
+  const unsigned int hor_stepping = ticks / hor_line_count;
   for (unsigned int i = 0; i <= hor_line_count; i++) {
     cr->move_to(graph_x_start + round(hor_line_spacing * i) - overshoot,
                 graph_y_start + graph_height + overshoot);
@@ -177,7 +184,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
 void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
   for (unsigned int i = 0; i < sensor_readings.size(); i++) {
     const unsigned int starting_x_val = graph_width + graph_x_start;
-    const double delta_x = (double)graph_width / 60;
+    const double delta_x = (double)graph_width / ticks;
 
     // Attempt to plot
     cr->set_line_width(line_width);

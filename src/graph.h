@@ -20,14 +20,16 @@ private:
   const unsigned int device_index;
   const unsigned int type;
 
-  unsigned int width;
-  unsigned int height;
+  const unsigned int ticks = 60;
 
   const unsigned int line_width = 1;
   const unsigned int graph_x_start = 25;
   const unsigned int graph_y_start = 40;
   const unsigned int right_padding = 55;
   const unsigned int scale_offset = 15;
+
+  unsigned int width;
+  unsigned int height;
 
   unsigned int graph_width;
   unsigned int graph_height;
