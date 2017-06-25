@@ -124,7 +124,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   }
 
   // Horizontal scale lines:
-  const unsigned int hor_line_count = 6;
+  const unsigned int hor_line_count = ticks / 10;
   const double hor_line_spacing = (double)graph_width / hor_line_count;
   for (unsigned int i = 1; i < hor_line_count; i++) {
     cr->move_to(0.5 + graph_x_start + round(hor_line_spacing * i),
