@@ -41,7 +41,8 @@ private:
   vector<Device::sensor_reading> sensor_readings;
   vector<Gdk::RGBA> &m_colors;
   bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
-  bool update();
+  const unsigned int scale_val (unsigned int raw_val) const;
+  const bool update();
   void check_resize();
   void draw_title(const Cairo::RefPtr<Cairo::Context> &cr);
   void draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr);

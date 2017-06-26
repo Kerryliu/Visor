@@ -37,14 +37,19 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   return true;
 }
 
-bool Graph::update() {
+const unsigned int Graph::scale_val(unsigned int raw_val) const {
+  const unsigned int scaled_val =
+      graph_y_start + graph_height -
+      ((double)raw_val / Device::sensor_max_vals[type]) * graph_height;
+  return scaled_val;
+}
+
+const bool Graph::update() {
   // update values
   for (unsigned int i = 0; i < sensor_readings.size(); i++) {
     const unsigned int raw_val =
         (sensor_readings[i].cur_val >= 0) ? sensor_readings[i].cur_val : 0;
-    const unsigned int scaled_val =
-        graph_y_start + graph_height -
-        (double)raw_val / Device::sensor_max_vals[type] * graph_height;
+    const unsigned int scaled_val = scale_val(raw_val);
     raw_vals[i].push_front(raw_val);
     scaled_vals[i].push_front(scaled_val);
     if (scaled_vals[i].size() > ticks + 1) {
@@ -56,8 +61,8 @@ bool Graph::update() {
   // Refresh window
   auto win = get_window();
   if (win) {
-    Gdk::Rectangle r(0, 0, get_allocation().get_width(),
-                     get_allocation().get_height());
+    Gdk::Rectangle r(graph_x_start, graph_y_start, graph_x_start + width,
+                     graph_y_start + height);
     win->invalidate_rect(r, false);
   }
   return true;
@@ -71,9 +76,7 @@ void Graph::check_resize() {
       for (auto orig_y_it = raw_vals[i].begin(),
                 norm_y_it = scaled_vals[i].begin();
            orig_y_it != raw_vals[i].end(); orig_y_it++, norm_y_it++) {
-        *norm_y_it =
-            graph_y_start + graph_height -
-            (double)(*orig_y_it) / Device::sensor_max_vals[type] * graph_height;
+        *norm_y_it = scale_val(*orig_y_it);
       }
     }
   }
