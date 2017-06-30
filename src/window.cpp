@@ -1,8 +1,8 @@
+#include "window.h"
 #include "device.h"
 #include "graph.h"
 #include "legend.h"
 #include "tree.h"
-#include "window.h"
 #include <chrono>
 #include <experimental/filesystem>
 #include <gtkmm.h>

@@ -24,7 +24,7 @@ private:
   unsigned int device_index;
   unsigned int type;
   vector<Device::sensor_reading> sensor_readings;
-  
+
   vector<std::shared_ptr<Gtk::Label>> m_labels;
   vector<std::shared_ptr<Gtk::Button>> m_color_buttons;
   vector<std::shared_ptr<Gtk::Label>> m_color_labels;
