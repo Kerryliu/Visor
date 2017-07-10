@@ -30,6 +30,7 @@ Window::Window() : m_vbox(Gtk::ORIENTATION_VERTICAL) {
   // Start a new worker thread:
   m_Dispatcher.connect(sigc::mem_fun(*this, &Window::update_all_components));
 
+  // Make the window~
   set_border_width(1);
   set_default_size(500, 600);
   Gtk::Window::set_titlebar(m_headerbar);
