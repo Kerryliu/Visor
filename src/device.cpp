@@ -14,7 +14,7 @@ const vector<string> Device::sensor_types_paths({"/in", "/fan", "/pwm",
                                                  "/temp"});
 const vector<string> Device::sensor_types_icons(
     {"assets/in.svg", "assets/fan.svg", "assets/pwm.svg", "assets/temp.svg"});
-const vector<unsigned int> Device::sensor_max_vals({5000, 2500, 5, 100000});
+const vector<int> Device::sensor_max_vals({5000, 2500, 5, 100000});
 const vector<string> Device::sensor_units({" V", " RPM", " V", " \u2103"});
 
 Device::Device(string file_path)
