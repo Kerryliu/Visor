@@ -33,7 +33,8 @@ bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
   graph_height = height - graph_y_start - scale_offset;
 
   // Grab text color from theme
-  text_color = this->get_style_context()->get_color();
+  auto sc = this->get_style_context();
+  text_color = sc->get_color();
 
   // Draw it
   draw_title(cr);
