@@ -4,6 +4,7 @@
 #include "graph.h"
 #include "legend.h"
 #include "tree.h"
+#include <gconfmm.h>
 #include <gtkmm.h>
 #include <memory>
 #include <thread>
