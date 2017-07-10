@@ -2,7 +2,7 @@
 #define GRAPH_H
 
 #include "device.h"
-#include <gtkmm/drawingarea.h>
+#include <gtkmm.h>
 #include <memory>
 #include <vector>
 
@@ -36,17 +36,19 @@ private:
 
   unsigned int prev_height = 0;
 
+  Gdk::RGBA text_color;
+
   vector<std::list<unsigned int>> raw_vals;
   vector<std::list<unsigned int>> scaled_vals;
   vector<Device::sensor_reading> sensor_readings;
   vector<Gdk::RGBA> &m_colors;
   bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
-  const unsigned int scale_val (unsigned int raw_val) const;
+  const unsigned int scale_val(unsigned int raw_val) const;
   const bool update();
   void check_resize();
   void draw_title(const Cairo::RefPtr<Cairo::Context> &cr);
   void draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr);
-  void make_plot(const Cairo::RefPtr<Cairo::Context> &cr);
+  void draw_plot(const Cairo::RefPtr<Cairo::Context> &cr);
 };
 
 #endif

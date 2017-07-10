@@ -25,15 +25,22 @@ void Graph::update_vals(vector<Device::sensor_reading> &sensor_readings) {
 
 // https://developer.gnome.org/gtkmm-tutorial/stable/chapter-drawingarea.html.en
 bool Graph::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
+  // Canvas and graph size
   Gtk::Allocation allocation = get_allocation();
   width = allocation.get_width();
   height = allocation.get_height();
-  draw_title(cr);
   graph_width = width - graph_x_start - right_padding;
   graph_height = height - graph_y_start - scale_offset;
+
+  // Grab text color from theme
+  auto sc = this->get_style_context();
+  text_color = sc->get_color();
+
+  // Draw it
+  draw_title(cr);
   check_resize();
   draw_graph_grid(cr);
-  make_plot(cr);
+  draw_plot(cr);
   return true;
 }
 
@@ -47,9 +54,17 @@ const unsigned int Graph::scale_val(unsigned int raw_val) const {
 const bool Graph::update() {
   // update values
   for (unsigned int i = 0; i < sensor_readings.size(); i++) {
-    const unsigned int raw_val =
-        (sensor_readings[i].cur_val >= 0) ? sensor_readings[i].cur_val : 0;
+    int raw_val;
+    // Make sure raw_val fits on graph;
+    if(sensor_readings[i].cur_val < 0) {
+      raw_val = 0;
+    } else if(sensor_readings[i].cur_val > Device::sensor_max_vals[type]) {
+      raw_val = Device::sensor_max_vals[type];
+    } else {
+      raw_val = sensor_readings[i].cur_val;
+    }
     const unsigned int scaled_val = scale_val(raw_val);
+
     raw_vals[i].push_front(raw_val);
     scaled_vals[i].push_front(scaled_val);
     if (scaled_vals[i].size() > ticks + 1) {
@@ -61,8 +76,7 @@ const bool Graph::update() {
   // Refresh window
   auto win = get_window();
   if (win) {
-    Gdk::Rectangle r(graph_x_start, graph_y_start, graph_x_start + width,
-                     graph_y_start + height);
+    Gdk::Rectangle r(graph_x_start, graph_y_start, graph_width, graph_height);
     win->invalidate_rect(r, false);
   }
   return true;
@@ -85,9 +99,8 @@ void Graph::check_resize() {
 void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
   const int left_offset = 10;
   const int top_offset = 10;
-  const double title_color = 0.4;
   cr->move_to(left_offset, top_offset);
-  cr->set_source_rgb(title_color, title_color, title_color);
+  Gdk::Cairo::set_source_rgba(cr, text_color);
 
   Pango::FontDescription font;
   font.set_weight(Pango::WEIGHT_BOLD);
@@ -98,6 +111,11 @@ void Graph::draw_title(const Cairo::RefPtr<Cairo::Context> &cr) {
 }
 
 void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
+  // Paint the background white
+  cr->set_source_rgb(1, 1, 1);
+  cr->rectangle(graph_x_start, graph_y_start, graph_width, graph_height);
+  cr->fill();
+
   // See https://www.cairographics.org/FAQ/#sharp_lines for the 0.5's here
   cr->set_line_width(line_width);
   const unsigned int overshoot = 5;
@@ -153,8 +171,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   cr->stroke();
 
   // Make that scale:
-  const double scale_color = 0.4;
-  cr->set_source_rgb(scale_color, scale_color, scale_color);
+  Gdk::Cairo::set_source_rgba(cr, text_color);
   Pango::FontDescription font;
   font.set_absolute_size(10000); // Not sure why this is so big
   // Vertical scale:
@@ -184,7 +201,7 @@ void Graph::draw_graph_grid(const Cairo::RefPtr<Cairo::Context> &cr) {
   }
 }
 
-void Graph::make_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
+void Graph::draw_plot(const Cairo::RefPtr<Cairo::Context> &cr) {
   for (unsigned int i = 0; i < sensor_readings.size(); i++) {
     const unsigned int starting_x_val = graph_width + graph_x_start;
     const double delta_x = (double)graph_width / ticks;
