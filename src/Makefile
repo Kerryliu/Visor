@@ -1,5 +1,5 @@
 NAME=Visor
-GTKFLAGS=`pkg-config gtkmm-3.0 cairo --cflags --libs gconfmm-2.6`
+GTKFLAGS=`pkg-config gtkmm-3.0 cairo --cflags --libs`
 MAGIC=-lstdc++fs
 SRC=main.cpp window.cpp device.cpp tree.cpp graph.cpp legend.cpp
 CFLAGS=-std=c++14 -g -Wall -o $(NAME)

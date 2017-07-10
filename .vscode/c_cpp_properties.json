@@ -47,7 +47,6 @@
                 "/usr/include/cairo",
                 "/usr/include/freetype2",
                 "/usr/include/atkmm-1.6",
-                "/usr/include/gconfmm-2.6",
                 "/usr/include/glib-2.0",
                 "/usr/lib/glib-2.0/include"
             ],
@@ -80,7 +79,6 @@
                     "/usr/include/cairo",
                     "/usr/include/freetype2",
                     "/usr/include/atkmm-1.6",
-                    "/usr/include/gconfmm-2.6",
                     "/usr/include/glib-2.0",
                     "/usr/lib/glib-2.0/include"
                 ],
